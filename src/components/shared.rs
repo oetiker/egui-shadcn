@@ -1,7 +1,12 @@
 //! Shared painting helpers for shadcn-style components.
 
-use egui::{Color32, Response, Stroke, Ui};
+use egui::{Color32, CornerRadius, Response, Stroke, Ui};
 use crate::Theme;
+
+/// Build a CornerRadius from an f32 radius, rounding to the nearest pixel.
+pub fn corner(r: f32) -> CornerRadius {
+    CornerRadius::same(r.round() as u8)
+}
 
 /// Linearly blend `a` toward `b` by `t` in 0..=1 (sRGB space, good enough for hover).
 pub fn mix_toward(a: Color32, b: Color32, t: f32) -> Color32 {
