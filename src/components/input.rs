@@ -9,11 +9,12 @@ pub struct Input<'a> {
     text: &'a mut String,
     hint: String,
     password: bool,
+    max_width: f32,
 }
 
 impl<'a> Input<'a> {
     pub fn new(text: &'a mut String) -> Self {
-        Self { text, hint: String::new(), password: false }
+        Self { text, hint: String::new(), password: false, max_width: 280.0 }
     }
     pub fn hint(mut self, h: impl Into<String>) -> Self {
         self.hint = h.into();
@@ -23,6 +24,11 @@ impl<'a> Input<'a> {
         self.password = yes;
         self
     }
+    /// Override the default 280px maximum width. Pass `f32::INFINITY` for full-width.
+    pub fn max_width(mut self, w: f32) -> Self {
+        self.max_width = w;
+        self
+    }
 }
 
 impl<'a> Widget for Input<'a> {
@@ -30,7 +36,7 @@ impl<'a> Widget for Input<'a> {
         let t = Theme::current(ui.ctx());
         let corner = crate::components::shared::corner(t.radius_md());
         let resp = ui.add_sized(
-            Vec2::new(ui.available_width().min(280.0), 36.0),
+            Vec2::new(ui.available_width().min(self.max_width), 36.0),
             TextEdit::singleline(self.text)
                 .hint_text(self.hint)
                 .password(self.password)

@@ -10,3 +10,6 @@ egui_extras = { version = "0.34", features = ["all_loaders"] }
 [dev-dependencies]
 eframe = "0.34"
 egui_kittest = { version = "0.34", features = ["wgpu", "snapshot"] }
+
+[[example]]
+name = "settings"

@@ -3,7 +3,7 @@
 
 use crate::components::shared::{corner, focus_ring, hover_fill};
 use crate::Theme;
-use egui::{Color32, Response, Sense, Stroke, StrokeKind, Ui, Vec2, Widget, WidgetText};
+use egui::{Color32, Response, Sense, Stroke, StrokeKind, Ui, Vec2, Widget};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum ButtonVariant {
@@ -24,13 +24,13 @@ pub enum ButtonSize {
 }
 
 pub struct Button {
-    text: WidgetText,
+    text: String,
     variant: ButtonVariant,
     size: ButtonSize,
 }
 
 impl Button {
-    pub fn new(text: impl Into<WidgetText>) -> Self {
+    pub fn new(text: impl Into<String>) -> Self {
         Self { text: text.into(), variant: ButtonVariant::Default, size: ButtonSize::Default }
     }
     pub fn variant(mut self, v: ButtonVariant) -> Self {
@@ -70,16 +70,17 @@ impl Widget for Button {
             ButtonSize::Lg => (40.0, 24.0),
             ButtonSize::Icon => (36.0, 0.0),
         };
+        let c = colors_for(self.variant, &t);
 
-        let galley = self.text.into_galley(
-            ui,
-            Some(egui::TextWrapMode::Extend),
-            f32::INFINITY,
-            egui::TextStyle::Button,
+        // Lay out the text with the explicit color + medium family baked into the
+        // galley, so it always wins over the global `override_text_color`
+        // (shadcn buttons are font-medium).
+        let fam = crate::theme::family(ui.ctx(), crate::theme::FAMILY_MEDIUM);
+        let galley = ui.painter().layout_no_wrap(
+            self.text.clone(),
+            egui::FontId::new(14.0, fam),
+            c.text,
         );
-        // The galley is consumed later by painting, so snapshot its text here
-        // for `widget_info` (accessibility label).
-        let label = galley.text().to_owned();
 
         let width = if self.size == ButtonSize::Icon {
             36.0
@@ -88,9 +89,8 @@ impl Widget for Button {
         };
         let desired = Vec2::new(width, height);
         let (rect, resp) = ui.allocate_exact_size(desired, Sense::click());
-        resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, ui.is_enabled(), &label));
+        resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, ui.is_enabled(), &self.text));
 
-        let c = colors_for(self.variant, &t);
         let hovered = resp.hovered();
         let mut fill = c.fill;
         if hovered {
