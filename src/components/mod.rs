@@ -4,3 +4,4 @@ pub mod input;
 pub mod label;
 pub mod shared;
 pub mod switch;
+pub mod tabs;

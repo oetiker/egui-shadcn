@@ -143,3 +143,43 @@ fn switch_checkbox_snapshot() {
     h.run();
     h.snapshot("switch_checkbox");
 }
+
+#[test]
+fn tabs_select() {
+    use egui_kittest::kittest::Queryable;
+    use egui_kittest::Harness;
+    use egui_shadcn::components::tabs::tab_bar;
+    use egui_shadcn::Theme;
+    use std::cell::Cell;
+    let active = Cell::new(0usize);
+    let mut h = Harness::new_ui(|ui| {
+        Theme::dark().apply(ui.ctx());
+        let mut sel = active.get();
+        tab_bar(ui, &mut sel, &["Account", "Notifications", "Display"]);
+        active.set(sel);
+    });
+    h.run();
+    h.get_by_label("Notifications").click();
+    h.run();
+    assert_eq!(active.get(), 1);
+}
+
+#[test]
+fn tabs_snapshot() {
+    use egui_kittest::Harness;
+    use egui_shadcn::components::tabs::tab_bar;
+    use egui_shadcn::Theme;
+    let mut h = Harness::builder()
+        .with_size(egui::vec2(420.0, 70.0))
+        .build_ui(|ui| {
+            Theme::dark().apply(ui.ctx());
+            ui.add_space(16.0);
+            ui.horizontal(|ui| {
+                ui.add_space(16.0);
+                let mut sel = 0usize;
+                tab_bar(ui, &mut sel, &["Account", "Notifications"]);
+            });
+        });
+    h.run();
+    h.snapshot("tabs");
+}
