@@ -17,13 +17,13 @@ pub fn oklch_to_srgb_a(l: f32, c: f32, h: f32, alpha: f32) -> Color32 {
     // OKLab -> LMS' -> LMS
     let l_ = l + 0.396_337_78 * oklab_a + 0.215_803_76 * oklab_b;
     let m_ = l - 0.105_561_35 * oklab_a - 0.063_854_17 * oklab_b;
-    let s_ = l - 0.089_484_18 * oklab_a - 1.291_485_55 * oklab_b;
+    let s_ = l - 0.089_484_18 * oklab_a - 1.291_485_5 * oklab_b;
     let (lc, mc, sc) = (l_ * l_ * l_, m_ * m_ * m_, s_ * s_ * s_);
 
     // LMS -> linear sRGB
-    let r = 4.076_741_66 * lc - 3.307_711_59 * mc + 0.230_969_93 * sc;
-    let g = -1.268_438_00 * lc + 2.609_757_40 * mc - 0.341_319_40 * sc;
-    let b = -0.004_196_09 * lc - 0.703_418_61 * mc + 1.707_614_70 * sc;
+    let r = 4.076_741_7 * lc - 3.307_711_6 * mc + 0.230_969_93 * sc;
+    let g = -1.268_438 * lc + 2.609_757_4 * mc - 0.341_319_4 * sc;
+    let b = -0.004_196_09 * lc - 0.703_418_6 * mc + 1.707_614_7 * sc;
 
     let to_u8 = |lin: f32| -> u8 {
         let lin = lin.clamp(0.0, 1.0);

@@ -78,7 +78,7 @@ impl Widget for Button {
         let fam = crate::theme::family(ui.ctx(), crate::theme::FAMILY_MEDIUM);
         let galley = ui.painter().layout_no_wrap(
             self.text.clone(),
-            egui::FontId::new(14.0, fam),
+            egui::FontId::new(14.0, fam.clone()),
             c.text,
         );
 
@@ -110,11 +110,13 @@ impl Widget for Button {
             if let Some(b) = c.border {
                 ui.painter().rect_stroke(rect, corner, Stroke::new(1.0, b), StrokeKind::Inside);
             }
-            let text_pos = egui::pos2(
-                rect.center().x - galley.size().x / 2.0,
-                rect.center().y - galley.size().y / 2.0,
+            ui.painter().text(
+                rect.center(),
+                egui::Align2::CENTER_CENTER,
+                &self.text,
+                egui::FontId::new(14.0, fam.clone()),
+                c.text,
             );
-            ui.painter().galley(text_pos, galley, c.text);
         }
         focus_ring(ui, &resp, &t, t.radius_md());
         resp

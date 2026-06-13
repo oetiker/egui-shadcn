@@ -41,6 +41,7 @@ impl<'a> Widget for Input<'a> {
                 .hint_text(self.hint)
                 .password(self.password)
                 .margin(Margin::symmetric(12, 8))
+                .vertical_align(egui::Align::Center)
                 .background_color(t.palette.input)
                 .text_color(t.palette.foreground),
         );
