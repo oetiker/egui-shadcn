@@ -1,0 +1,23 @@
+{
+  "name": "egui-shadcn-dev",
+  "owner": {
+    "name": "OETIKER+PARTNER AG",
+    "email": "tobi@oetiker.ch"
+  },
+  "metadata": {
+    "description": "Marketplace for the egui-shadcn Claude Code plugin"
+  },
+  "plugins": [
+    {
+      "name": "egui-shadcn",
+      "source": ".",
+      "description": "Build polished Rust egui/eframe GUIs from shadcn designs. Vendors a tested shadcn-v4 component module plus a layout-first workflow with headless render verification.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Tobias Oetiker <tobi@oetiker.ch>"
+      },
+      "keywords": ["egui", "eframe", "rust", "gui", "shadcn", "design-system"],
+      "category": "development"
+    }
+  ]
+}

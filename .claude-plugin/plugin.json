@@ -5,7 +5,7 @@
   "author": {
     "name": "Tobias Oetiker <tobi@oetiker.ch>"
   },
-  "homepage": "https://github.com/oposs/egui-shadcn",
-  "repository": "https://github.com/oposs/egui-shadcn",
+  "homepage": "https://github.com/oetiker/egui-shadcn",
+  "repository": "https://github.com/oetiker/egui-shadcn",
   "keywords": ["egui", "eframe", "rust", "gui", "shadcn", "design-system", "frontend"]
 }
