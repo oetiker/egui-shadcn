@@ -97,3 +97,113 @@ impl Theme {
     pub fn radius_lg(&self) -> f32 { self.radius }
     pub fn radius_xl(&self) -> f32 { self.radius + 4.0 }
 }
+
+// ---- Font + apply + accessor ----
+
+use egui::{FontData, FontDefinitions, FontFamily, FontId, Stroke, TextStyle};
+use std::sync::Arc;
+
+fn theme_id() -> egui::Id {
+    egui::Id::new("egui_shadcn::active_theme")
+}
+
+/// Named font families for shadcn-style weight emphasis.
+pub const FAMILY_MEDIUM: &str = "oxanium-medium";
+pub const FAMILY_SEMIBOLD: &str = "oxanium-semibold";
+
+// NOTE: The Google Fonts repository only ships Oxanium as a variable font
+// (Oxanium[wght].ttf) — there are no separate static weight files any more.
+// All three weight slots use the same variable font binary; egui will render
+// at one effective weight.  A future improvement would be to use font
+// variation settings once egui gains that support.
+fn install_fonts(ctx: &egui::Context) {
+    let mut fonts = FontDefinitions::default();
+    fonts.font_data.insert(
+        "oxanium".into(),
+        Arc::new(FontData::from_static(include_bytes!("../assets/Oxanium-Regular.ttf"))),
+    );
+    fonts.font_data.insert(
+        FAMILY_MEDIUM.into(),
+        Arc::new(FontData::from_static(include_bytes!("../assets/Oxanium-Medium.ttf"))),
+    );
+    fonts.font_data.insert(
+        FAMILY_SEMIBOLD.into(),
+        Arc::new(FontData::from_static(include_bytes!("../assets/Oxanium-SemiBold.ttf"))),
+    );
+    fonts
+        .families
+        .entry(FontFamily::Proportional)
+        .or_default()
+        .insert(0, "oxanium".into());
+    fonts
+        .families
+        .insert(FontFamily::Name(FAMILY_MEDIUM.into()), vec![FAMILY_MEDIUM.into()]);
+    fonts
+        .families
+        .insert(FontFamily::Name(FAMILY_SEMIBOLD.into()), vec![FAMILY_SEMIBOLD.into()]);
+    ctx.set_fonts(fonts);
+}
+
+impl Theme {
+    /// Read the active theme stored by [`Theme::apply`]. Falls back to dark.
+    pub fn current(ctx: &egui::Context) -> Theme {
+        ctx.data(|d| d.get_temp::<Theme>(theme_id())).unwrap_or_else(Theme::dark)
+    }
+
+    /// Push this theme into the egui context: fonts, type scale, spacing, colors.
+    pub fn apply(&self, ctx: &egui::Context) {
+        install_fonts(ctx);
+        let p = &self.palette;
+
+        ctx.global_style_mut(|s| {
+            use FontFamily::Proportional;
+            s.text_styles = [
+                (TextStyle::Small, FontId::new(12.0, Proportional)),
+                (TextStyle::Body, FontId::new(14.0, Proportional)),
+                (TextStyle::Button, FontId::new(14.0, Proportional)),
+                (TextStyle::Monospace, FontId::new(13.0, FontFamily::Monospace)),
+                (TextStyle::Heading, FontId::new(20.0, FontFamily::Name(FAMILY_SEMIBOLD.into()))),
+            ]
+            .into();
+
+            s.spacing.item_spacing = egui::vec2(8.0, 8.0);
+            s.spacing.button_padding = egui::vec2(16.0, 8.0);
+            s.spacing.window_margin = egui::Margin::same(0);
+            s.spacing.interact_size.y = 36.0;
+
+            let v = &mut s.visuals;
+            v.dark_mode = self.dark;
+            v.panel_fill = p.background;
+            v.window_fill = p.card;
+            v.window_stroke = Stroke::new(1.0, p.border);
+            v.extreme_bg_color = p.input;
+            v.faint_bg_color = p.muted;
+            v.override_text_color = Some(p.foreground);
+            v.hyperlink_color = p.primary;
+            v.selection.bg_fill = p.primary.gamma_multiply(0.35);
+            v.selection.stroke = Stroke::new(1.0, p.ring);
+            v.widgets.noninteractive.bg_fill = p.background;
+            v.widgets.noninteractive.bg_stroke = Stroke::new(1.0, p.border);
+            v.widgets.noninteractive.fg_stroke = Stroke::new(1.0, p.foreground);
+            for w in [
+                &mut v.widgets.inactive,
+                &mut v.widgets.hovered,
+                &mut v.widgets.active,
+                &mut v.widgets.open,
+            ] {
+                w.bg_fill = p.secondary;
+                w.weak_bg_fill = p.secondary;
+                w.bg_stroke = Stroke::new(1.0, p.border);
+                w.fg_stroke = Stroke::new(1.0, p.foreground);
+                w.corner_radius = egui::CornerRadius::same(self.radius_md() as u8);
+            }
+        });
+
+        ctx.data_mut(|d| d.insert_temp(theme_id(), *self));
+    }
+}
+
+/// Convenience accessor for components.
+pub fn theme(ctx: &egui::Context) -> Theme {
+    Theme::current(ctx)
+}
