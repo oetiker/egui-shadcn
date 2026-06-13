@@ -1,0 +1,11 @@
+{
+  "name": "egui-shadcn",
+  "description": "Build polished Rust egui/eframe GUIs from shadcn designs. Vendors a tested shadcn-v4 component module (theme/tokens, flexbox-substitute layout helpers, and components) plus a layout-first workflow with headless egui_kittest render verification.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Tobias Oetiker <tobi@oetiker.ch>"
+  },
+  "homepage": "https://github.com/oposs/egui-shadcn",
+  "repository": "https://github.com/oposs/egui-shadcn",
+  "keywords": ["egui", "eframe", "rust", "gui", "shadcn", "design-system", "frontend"]
+}
