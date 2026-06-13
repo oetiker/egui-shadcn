@@ -11,7 +11,7 @@ pub fn tab_bar(ui: &mut Ui, active: &mut usize, labels: &[&str]) -> bool {
     let trigger_h = 30.0;
     let bar_h = trigger_h + pad * 2.0;
 
-    let total_w = ui.available_width().min(520.0);
+    let total_w = ui.available_width();
     let (rect, _resp) = ui.allocate_exact_size(Vec2::new(total_w, bar_h), Sense::hover());
     // track background
     ui.painter().rect_filled(rect, CornerRadius::same(t.radius_lg() as u8), t.palette.muted);

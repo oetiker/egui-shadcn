@@ -26,7 +26,7 @@ pub struct SettingsState {
                      // show_inside() requires &mut Ui, but we expose a ctx-level API
                      // so the caller does not need to manage a root panel.
 pub fn settings_ui(ctx: &egui::Context, state: &mut SettingsState) {
-    let t = Theme::dark();
+    let t = Theme::current(ctx);
     egui::CentralPanel::default()
         .frame(
             egui::Frame::new()
