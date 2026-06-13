@@ -11,19 +11,19 @@ pub fn oklch_to_srgb(l: f32, c: f32, h: f32) -> Color32 {
 /// Same as [`oklch_to_srgb`] with an explicit alpha in 0..=1.
 pub fn oklch_to_srgb_a(l: f32, c: f32, h: f32, alpha: f32) -> Color32 {
     let h_rad = h.to_radians();
-    let a = c * h_rad.cos();
-    let b = c * h_rad.sin();
+    let oklab_a = c * h_rad.cos();
+    let oklab_b = c * h_rad.sin();
 
     // OKLab -> LMS' -> LMS
-    let l_ = l + 0.396_337_78 * a + 0.215_803_76 * b;
-    let m_ = l - 0.105_561_35 * a - 0.063_854_17 * b;
-    let s_ = l - 0.089_484_18 * a - 1.291_485_55 * b;
+    let l_ = l + 0.396_337_78 * oklab_a + 0.215_803_76 * oklab_b;
+    let m_ = l - 0.105_561_35 * oklab_a - 0.063_854_17 * oklab_b;
+    let s_ = l - 0.089_484_18 * oklab_a - 1.291_485_55 * oklab_b;
     let (lc, mc, sc) = (l_ * l_ * l_, m_ * m_ * m_, s_ * s_ * s_);
 
     // LMS -> linear sRGB
     let r = 4.076_741_66 * lc - 3.307_711_59 * mc + 0.230_969_93 * sc;
     let g = -1.268_438_00 * lc + 2.609_757_40 * mc - 0.341_319_40 * sc;
-    let bl = -0.004_196_09 * lc - 0.703_418_61 * mc + 1.707_614_70 * sc;
+    let b = -0.004_196_09 * lc - 0.703_418_61 * mc + 1.707_614_70 * sc;
 
     let to_u8 = |lin: f32| -> u8 {
         let lin = lin.clamp(0.0, 1.0);
@@ -38,7 +38,7 @@ pub fn oklch_to_srgb_a(l: f32, c: f32, h: f32, alpha: f32) -> Color32 {
     Color32::from_rgba_unmultiplied(
         to_u8(r),
         to_u8(g),
-        to_u8(bl),
+        to_u8(b),
         (alpha * 255.0).round().clamp(0.0, 255.0) as u8,
     )
 }
