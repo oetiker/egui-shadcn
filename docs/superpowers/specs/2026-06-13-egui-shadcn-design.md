@@ -124,9 +124,12 @@ The settings screen is the acceptance test. Use **`egui_kittest`** (egui's
 official test harness) to render the UI to a PNG headlessly for snapshot
 comparison, so the eval runs without a real window.
 
-**Open item:** confirm `egui_kittest` snapshot rendering works in the user's
-Linux/headless setup before committing to it; fallback is running `eframe` and
-capturing a frame.
+**Verified (2026-06-13):** `egui_kittest` v0.34.3 with features `["wgpu",
+"snapshot"]` renders egui UIs to PNG headlessly on the target machine via
+`wgpu` over mesa (no display server needed). A throwaway spike produced a correct
+800×600 RGBA render of a heading + button. This also enables the development loop:
+the rendered PNG can be inspected directly to iterate on the layout visually —
+the missing "web-like" feedback loop.
 
 ## Defaults (settled)
 
