@@ -183,3 +183,55 @@ fn tabs_snapshot() {
     h.run();
     h.snapshot("tabs");
 }
+
+#[test]
+fn select_and_badge_render() {
+    use egui_kittest::Harness;
+    use egui_shadcn::components::badge::{badge, BadgeVariant};
+    use egui_shadcn::components::select::select;
+    use egui_shadcn::Theme;
+    let mut h = Harness::new_ui(|ui| {
+        Theme::dark().apply(ui.ctx());
+        let mut choice = 0usize;
+        select(ui, "lang", &mut choice, &["English", "German"]);
+        badge(ui, "New", BadgeVariant::Default);
+    });
+    h.run();
+    assert!(h.ctx.viewport_rect().width() > 0.0);
+}
+
+#[test]
+fn card_badge_select_snapshot() {
+    use egui_kittest::Harness;
+    use egui_shadcn::components::badge::{badge, BadgeVariant};
+    use egui_shadcn::components::card::{card_description, card_title};
+    use egui_shadcn::components::select::select;
+    use egui_shadcn::{layout, Theme};
+    let mut h = Harness::builder()
+        .with_size(egui::vec2(420.0, 220.0))
+        .build_ui(|ui| {
+            Theme::dark().apply(ui.ctx());
+            ui.add_space(16.0);
+            ui.horizontal(|ui| {
+                ui.add_space(16.0);
+                ui.vertical(|ui| {
+                    layout::card(ui, |ui| {
+                        card_title(ui, "Notifications");
+                        card_description(ui, "Choose what you want to be notified about.");
+                        ui.add_space(8.0);
+                        layout::row(ui, 6.0, |ui| {
+                            badge(ui, "Default", BadgeVariant::Default);
+                            badge(ui, "Secondary", BadgeVariant::Secondary);
+                            badge(ui, "New", BadgeVariant::Destructive);
+                            badge(ui, "Outline", BadgeVariant::Outline);
+                        });
+                        ui.add_space(8.0);
+                        let mut choice = 0usize;
+                        select(ui, "lang", &mut choice, &["English", "German"]);
+                    });
+                });
+            });
+        });
+    h.run();
+    h.snapshot("card_badge_select");
+}
