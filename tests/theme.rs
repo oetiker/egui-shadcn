@@ -8,7 +8,7 @@ fn apply_sets_panel_fill_and_stores_theme() {
     // run one frame so style takes effect
     let _ = ctx.run_ui(Default::default(), |_ui| {});
     let got = theme(&ctx);
-    assert_eq!(got.dark, true);
+    assert!(got.dark);
     assert_eq!(ctx.global_style().visuals.panel_fill, Theme::dark().palette.background);
 }
 
