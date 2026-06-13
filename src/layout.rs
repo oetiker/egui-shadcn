@@ -1,8 +1,7 @@
 //! Flexbox substitutes for egui's single-pass layout.
-//! `gap` maps to item_spacing; grow/space-between use egui_extras::StripBuilder.
+//! `gap` maps to item_spacing; space-between right-aligns via a nested layout.
 
 use egui::Ui;
-use egui_extras::{Size, StripBuilder};
 
 /// Horizontal stack with an explicit gap (flex-direction: row; gap: N).
 pub fn row<R>(ui: &mut Ui, gap: f32, add: impl FnOnce(&mut Ui) -> R) -> R {
@@ -23,23 +22,16 @@ pub fn vstack<R>(ui: &mut Ui, gap: f32, add: impl FnOnce(&mut Ui) -> R) -> R {
 }
 
 /// A row whose `left` content hugs the start and `right` content hugs the end
-/// (justify-content: space-between). Implemented with two remainder cells.
+/// (justify-content: space-between).
 pub fn space_between(
     ui: &mut Ui,
     left: impl FnOnce(&mut Ui),
     right: impl FnOnce(&mut Ui),
 ) {
-    StripBuilder::new(ui)
-        .size(Size::remainder())
-        .size(Size::remainder())
-        .horizontal(|mut strip| {
-            strip.cell(|ui| {
-                ui.horizontal(|ui| left(ui));
-            });
-            strip.cell(|ui| {
-                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                    right(ui)
-                });
-            });
+    ui.horizontal(|ui| {
+        left(ui);
+        ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+            right(ui);
         });
+    });
 }

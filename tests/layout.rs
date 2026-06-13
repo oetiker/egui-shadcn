@@ -16,3 +16,21 @@ fn row_and_vstack_compose() {
     h.run();
     assert!(h.ctx.viewport_rect().width() > 0.0);
 }
+
+#[test]
+fn space_between_composes() {
+    let mut h = Harness::new_ui(|ui| {
+        Theme::dark().apply(ui.ctx());
+        layout::space_between(
+            ui,
+            |ui| {
+                ui.label("left");
+            },
+            |ui| {
+                ui.label("right");
+            },
+        );
+    });
+    h.run();
+    assert!(h.ctx.viewport_rect().width() > 0.0);
+}
