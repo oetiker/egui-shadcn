@@ -4,7 +4,7 @@ use crate::color::{oklch_to_srgb as c, oklch_to_srgb_a as ca};
 use egui::Color32;
 
 /// The semantic shadcn color tokens. Surfaces come in `x` / `x_foreground` pairs.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Palette {
     pub background: Color32,
     pub foreground: Color32,
@@ -72,12 +72,12 @@ impl Palette {
             destructive_foreground: c(0.985, 0.0, 0.0),
             border: ca(1.0, 0.0, 0.0, 0.10),
             input: ca(1.0, 0.0, 0.0, 0.15),
-            ring: c(0.556, 0.0, 0.0),
+            ring: c(0.556, 0.0, 0.0), // solid mid-gray (border/input above are translucent white)
         }
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Theme {
     pub palette: Palette,
     pub radius: f32,
@@ -92,8 +92,8 @@ impl Theme {
         Self { palette: Palette::dark(), radius: 10.0, dark: true }
     }
 
-    pub fn radius_sm(&self) -> f32 { self.radius - 4.0 }
-    pub fn radius_md(&self) -> f32 { self.radius - 2.0 }
+    pub fn radius_sm(&self) -> f32 { (self.radius - 4.0).max(0.0) }
+    pub fn radius_md(&self) -> f32 { (self.radius - 2.0).max(0.0) }
     pub fn radius_lg(&self) -> f32 { self.radius }
     pub fn radius_xl(&self) -> f32 { self.radius + 4.0 }
 }

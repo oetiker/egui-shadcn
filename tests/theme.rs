@@ -14,7 +14,7 @@ fn radius_scale_is_derived() {
 fn light_and_dark_differ() {
     let l = Theme::light();
     let d = Theme::dark();
-    assert!(l.dark == false && d.dark == true);
+    assert!(!l.dark && d.dark);
     assert_ne!(l.palette.background, d.palette.background);
 }
 
