@@ -104,7 +104,9 @@ use egui::{FontData, FontDefinitions, FontFamily, FontId, Stroke, TextStyle};
 use std::sync::Arc;
 
 fn theme_id() -> egui::Id {
-    egui::Id::new("egui_shadcn::active_theme")
+    static ID: std::sync::LazyLock<egui::Id> =
+        std::sync::LazyLock::new(|| egui::Id::new("egui_shadcn::active_theme"));
+    *ID
 }
 
 /// Named font families for shadcn-style weight emphasis.
@@ -117,6 +119,12 @@ pub const FAMILY_SEMIBOLD: &str = "oxanium-semibold";
 // at one effective weight.  A future improvement would be to use font
 // variation settings once egui gains that support.
 fn install_fonts(ctx: &egui::Context) {
+    // Building the font atlas is expensive and `apply` runs every frame, so
+    // install the fonts only once per context.
+    let installed_id = egui::Id::new("egui_shadcn::fonts_installed");
+    if ctx.data(|d| d.get_temp::<bool>(installed_id)).unwrap_or(false) {
+        return;
+    }
     let mut fonts = FontDefinitions::default();
     fonts.font_data.insert(
         "oxanium".into(),
@@ -142,6 +150,7 @@ fn install_fonts(ctx: &egui::Context) {
         .families
         .insert(FontFamily::Name(FAMILY_SEMIBOLD.into()), vec![FAMILY_SEMIBOLD.into()]);
     ctx.set_fonts(fonts);
+    ctx.data_mut(|d| d.insert_temp(installed_id, true));
 }
 
 impl Theme {
@@ -151,6 +160,12 @@ impl Theme {
     }
 
     /// Push this theme into the egui context: fonts, type scale, spacing, colors.
+    ///
+    /// Safe to call once per frame: the font atlas is only built on the first
+    /// call per context (subsequent calls just refresh the style and stored
+    /// theme). egui-native widgets pick up the inactive/hovered/active visuals
+    /// set here, while the crate's own custom components manage their own
+    /// per-state colors.
     pub fn apply(&self, ctx: &egui::Context) {
         install_fonts(ctx);
         let p = &self.palette;
@@ -196,6 +211,12 @@ impl Theme {
                 w.bg_stroke = Stroke::new(1.0, p.border);
                 w.fg_stroke = Stroke::new(1.0, p.foreground);
                 w.corner_radius = egui::CornerRadius::same(self.radius_md() as u8);
+            }
+            // shadcn uses the `accent` token for hover/active feedback so
+            // native widgets (e.g. ComboBox dropdown items) don't look inert.
+            for w in [&mut v.widgets.hovered, &mut v.widgets.active] {
+                w.bg_fill = p.accent;
+                w.weak_bg_fill = p.accent;
             }
         });
 
