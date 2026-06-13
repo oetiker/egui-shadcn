@@ -88,3 +88,58 @@ fn label_input_snapshot() {
     h.run();
     h.snapshot("label_input");
 }
+
+#[test]
+fn switch_toggles() {
+    use egui_kittest::kittest::Queryable;
+    use egui_kittest::Harness;
+    use egui_shadcn::components::switch::toggle;
+    use egui_shadcn::Theme;
+    use std::cell::Cell;
+    let on = Cell::new(false);
+    let mut h = Harness::new_ui(|ui| {
+        Theme::dark().apply(ui.ctx());
+        let mut v = on.get();
+        if toggle(ui, &mut v).clicked() {
+            on.set(v);
+        }
+    });
+    h.run();
+    h.get_by_role(egui::accesskit::Role::CheckBox).click();
+    h.run();
+    assert!(on.get(), "switch did not toggle on");
+}
+
+#[test]
+fn switch_checkbox_snapshot() {
+    use egui_kittest::Harness;
+    use egui_shadcn::components::checkbox::checkbox;
+    use egui_shadcn::components::switch::toggle;
+    use egui_shadcn::{layout, Theme};
+    let mut h = Harness::builder()
+        .with_size(egui::vec2(220.0, 120.0))
+        .build_ui(|ui| {
+            Theme::dark().apply(ui.ctx());
+            ui.add_space(16.0);
+            ui.horizontal(|ui| {
+                ui.add_space(16.0);
+                ui.vertical(|ui| {
+                    layout::row(ui, 8.0, |ui| {
+                        let mut on = true;
+                        toggle(ui, &mut on);
+                        let mut off = false;
+                        toggle(ui, &mut off);
+                    });
+                    ui.add_space(12.0);
+                    layout::row(ui, 8.0, |ui| {
+                        let mut c1 = true;
+                        checkbox(ui, &mut c1);
+                        let mut c2 = false;
+                        checkbox(ui, &mut c2);
+                    });
+                });
+            });
+        });
+    h.run();
+    h.snapshot("switch_checkbox");
+}
