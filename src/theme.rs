@@ -113,6 +113,18 @@ fn theme_id() -> egui::Id {
 pub const FAMILY_MEDIUM: &str = "oxanium-medium";
 pub const FAMILY_SEMIBOLD: &str = "oxanium-semibold";
 
+/// Return the named font family if it's registered (via `Theme::apply`), else
+/// fall back to Proportional. egui defers `set_fonts` to the next frame, so on
+/// the very first frame after `apply` a named family may not be in the atlas yet.
+pub fn family(ctx: &egui::Context, name: &str) -> egui::FontFamily {
+    let fam = egui::FontFamily::Name(name.into());
+    if ctx.fonts(|f| f.definitions().families.contains_key(&fam)) {
+        fam
+    } else {
+        egui::FontFamily::Proportional
+    }
+}
+
 // NOTE: The Google Fonts repository only ships Oxanium as a variable font
 // (Oxanium[wght].ttf) — there are no separate static weight files any more.
 // All three weight slots use the same variable font binary; egui will render

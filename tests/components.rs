@@ -49,3 +49,42 @@ fn button_variants_snapshot() {
     h.run();
     h.snapshot("button_variants");
 }
+
+#[test]
+fn input_accepts_text() {
+    use egui_kittest::Harness;
+    use egui_shadcn::components::input::Input;
+    use egui_shadcn::Theme;
+    let mut text = String::new();
+    let mut h = Harness::new_ui(|ui| {
+        Theme::dark().apply(ui.ctx());
+        ui.add(Input::new(&mut text).hint("Email"));
+    });
+    h.run();
+    assert!(h.ctx.viewport_rect().width() > 0.0);
+}
+
+#[test]
+fn label_input_snapshot() {
+    use egui_kittest::Harness;
+    use egui_shadcn::components::input::Input;
+    use egui_shadcn::components::label::{description, label};
+    use egui_shadcn::Theme;
+    let mut h = Harness::builder()
+        .with_size(egui::vec2(360.0, 140.0))
+        .build_ui(|ui| {
+            Theme::dark().apply(ui.ctx());
+            ui.add_space(16.0);
+            ui.horizontal(|ui| {
+                ui.add_space(16.0);
+                ui.vertical(|ui| {
+                    label(ui, "Email");
+                    let mut s = String::from("you@example.com");
+                    ui.add(Input::new(&mut s));
+                    description(ui, "We'll never share your email.");
+                });
+            });
+        });
+    h.run();
+    h.snapshot("label_input");
+}
