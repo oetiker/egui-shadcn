@@ -29,7 +29,12 @@ own output and self-correct* instead of guessing.
 ## The reference screen
 
 The skill is validated against a settings-form-with-tabs screen, built entirely
-from the module. Run it live:
+from the module:
+
+![egui-shadcn settings screen](docs/settings-screen.png)
+
+This is the actual `egui_kittest` snapshot render (dark theme, Oxanium type). Run
+it live:
 
 ```bash
 cargo run --example settings
