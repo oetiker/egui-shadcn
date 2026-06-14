@@ -1,8 +1,10 @@
 # egui-shadcn
 
 A [Claude Code](https://claude.com/claude-code) plugin that lets Claude build
-polished Rust [egui](https://github.com/emilk/egui)/eframe GUIs from
+polished Rust [egui](https://github.com/emilk/egui) GUIs from
 [shadcn/ui](https://ui.shadcn.com/) designs — without the usual endless iteration.
+The components are plain egui widgets (just `egui` + `egui_extras`), so they drop
+into any backend — eframe, `egui-winit` + a custom rasterizer, glow, or wgpu.
 
 ## Why
 
@@ -15,7 +17,9 @@ This plugin fixes that by shipping three things:
 1. **A tested, compiling component module** (`registry/`) that ports the
    shadcn-v4 (new-york / OKLCH) design system to egui — theme & tokens, a
    flexbox-substitute layout layer, and themed components (Button, Input, Label,
-   Card, Tabs, Switch, Checkbox, Select, Separator, Badge).
+   Card, Tabs, Switch, Checkbox, Select, Separator, Badge). Runtime deps are just
+   `egui` + `egui_extras` — no eframe/wgpu coupling; eframe and `egui_kittest`+wgpu
+   are dev-only (the example and the snapshot harness).
 2. **A layout-first workflow** (`skills/egui-shadcn/SKILL.md`): vendor the module
    into your project → decompose the design top-down → map it with the reference
    tables → build from the tested parts → verify with a headless render.
@@ -28,13 +32,15 @@ own output and self-correct* instead of guessing.
 
 ## The reference screen
 
-The skill is validated against a settings-form-with-tabs screen, built entirely
-from the module:
+The skill is validated against a settings screen whose tabs double as a gallery
+of every component, built entirely from the module:
 
 ![egui-shadcn settings screen](docs/settings-screen.png)
 
-This is the actual `egui_kittest` snapshot render (dark theme, Oxanium type). Run
-it live:
+![egui-shadcn component gallery](docs/components-screen.png)
+
+These are the actual `egui_kittest` snapshot renders (dark theme, Oxanium type).
+Run it live:
 
 ```bash
 cargo run --example settings

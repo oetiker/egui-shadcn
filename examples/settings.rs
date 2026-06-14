@@ -3,15 +3,14 @@ use egui_shadcn::Theme;
 
 fn main() -> eframe::Result<()> {
     let mut state = SettingsState::default();
-    // run_ui_native provides &mut Ui instead of &Context; since settings_ui
-    // owns its CentralPanel it needs ctx access — use run_simple_native.
-    #[allow(deprecated)]
-    eframe::run_simple_native(
+    // run_ui_native hands us a root &mut Ui; settings_ui fills it via a
+    // CentralPanel::show_inside, so no ctx-level panel management is needed.
+    eframe::run_ui_native(
         "egui-shadcn settings",
         eframe::NativeOptions::default(),
-        move |ctx, _frame| {
-            Theme::dark().apply(ctx);
-            settings_ui(ctx, &mut state);
+        move |ui, _frame| {
+            Theme::dark().apply(ui.ctx());
+            settings_ui(ui, &mut state);
         },
     )
 }

@@ -137,18 +137,24 @@ fn install_fonts(ctx: &egui::Context) {
     if ctx.data(|d| d.get_temp::<bool>(installed_id)).unwrap_or(false) {
         return;
     }
+    // Oxanium's ascent reserves more empty space above the cap height than below
+    // the baseline, so egui's row-box centering (`Align2::CENTER_CENTER` in
+    // buttons/badges/tabs, and `TextEdit` vertical centering) leaves single-line
+    // text sitting ~0.18em too high. Nudge every glyph down by that fraction so
+    // centered text is optically balanced. Measured against the reference button.
+    let tweak = egui::FontTweak { y_offset_factor: 0.18, ..Default::default() };
     let mut fonts = FontDefinitions::default();
     fonts.font_data.insert(
         "oxanium".into(),
-        Arc::new(FontData::from_static(include_bytes!("../assets/Oxanium-Regular.ttf"))),
+        Arc::new(FontData::from_static(include_bytes!("../assets/Oxanium-Regular.ttf")).tweak(tweak.clone())),
     );
     fonts.font_data.insert(
         FAMILY_MEDIUM.into(),
-        Arc::new(FontData::from_static(include_bytes!("../assets/Oxanium-Medium.ttf"))),
+        Arc::new(FontData::from_static(include_bytes!("../assets/Oxanium-Medium.ttf")).tweak(tweak.clone())),
     );
     fonts.font_data.insert(
         FAMILY_SEMIBOLD.into(),
-        Arc::new(FontData::from_static(include_bytes!("../assets/Oxanium-SemiBold.ttf"))),
+        Arc::new(FontData::from_static(include_bytes!("../assets/Oxanium-SemiBold.ttf")).tweak(tweak)),
     );
     fonts
         .families

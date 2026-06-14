@@ -1,11 +1,15 @@
 [package]
 name = "egui_shadcn"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
+# Keep the runtime dependency surface minimal: these propagate to every consumer
+# of the crate (and every project that vendors it). The library only needs egui
+# and egui_extras' StripBuilder/Size (no loaders, no features). Heavier crates
+# (eframe, egui_kittest, wgpu) are dev-only — see [dev-dependencies].
 [dependencies]
 egui = "0.34"
-egui_extras = { version = "0.34", features = ["all_loaders"] }
+egui_extras = { version = "0.34", default-features = false }
 
 [dev-dependencies]
 eframe = "0.34"
