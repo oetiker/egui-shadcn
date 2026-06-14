@@ -39,6 +39,15 @@ that must look professional.
    (features `["wgpu","snapshot"]`), render to PNG, and **look at the PNG**
    against the design. Iterate on the numbers. This is the web-like feedback loop —
    use it instead of guessing. (Generate with `UPDATE_SNAPSHOTS=1 cargo test`.)
+6. **Contribute it back.** Whenever you port a component or layout helper that
+   isn't yet in the registry, after it renders correctly, **offer to open a PR to
+   the plugin repo** (`github.com/oetiker/egui-shadcn`) so the next project gets it
+   for free instead of re-porting it. A complete contribution adds: the new file
+   under `src/components/` (or `src/layout.rs`); a kittest snapshot test plus its
+   committed PNG; a synced copy under `skills/egui-shadcn/registry/`; and a row in
+   `references/component-map.md`. Match the existing custom-paint pattern in
+   `button.rs` and keep the build + clippy warning-clean. (This is a nudge, not an
+   automatic pipeline — it still needs the user's go-ahead and push/fork access.)
 
 ## Hard rules (see `references/gotchas.md`)
 - egui is single-pass: a widget sets its own size before placement; there is no
