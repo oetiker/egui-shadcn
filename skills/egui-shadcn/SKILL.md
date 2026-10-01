@@ -1,6 +1,6 @@
 ---
 name: egui-shadcn
-description: Use when building or restyling a Rust egui GUI from a shadcn/web design (screenshot, component code, or description). Vendors a tested shadcn-v4 component module into the project and maps the design onto it, layout-first. Backend-agnostic — works with eframe, egui-winit, or any egui integration.
+description: Use when building or restyling a Rust egui GUI from a shadcn/web design (screenshot, component code, or description). Vendors a tested shadcn-v4 component module into the project and maps the design onto it, layout-first. Backend-agnostic — works with eframe, egui-winit, or any egui integration. Also use when an egui app renders without a GPU (CPU rasterizer, softbuffer, custom egui-winit loop) and is slow, pins a CPU core, redraws late, or misroutes pointer input.
 ---
 
 # egui-shadcn
@@ -23,6 +23,12 @@ This skill covers two distinct activities — keep them separate:
 - **Part A — Using the components** to build a screen (the common case).
 - **Part B — Porting a new component** into the library (when a needed widget
   isn't in the registry yet).
+
+Driving egui yourself (`egui-winit`, `begin_pass`/`end_pass`) or rasterizing on
+the CPU (no GPU, softbuffer)? Read `references/cpu-rendering.md` before writing
+the frame loop: repaint scheduling, tessellation settings, rasterizer fast
+paths, damage tracking, and the input-routing predicates that lie in a custom
+loop.
 
 ---
 

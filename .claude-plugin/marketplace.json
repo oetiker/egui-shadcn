@@ -12,7 +12,7 @@
       "name": "egui-shadcn",
       "source": ".",
       "description": "Build polished Rust egui GUIs from shadcn designs — backend-agnostic plain egui widgets (eframe, egui-winit, or any backend). Vendors a tested shadcn-v4 component module plus a layout-first workflow with headless render verification.",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": {
         "name": "Tobias Oetiker <tobi@oetiker.ch>"
       },

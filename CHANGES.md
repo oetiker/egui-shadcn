@@ -4,6 +4,17 @@ All notable changes to the **egui-shadcn** plugin and the `egui_shadcn` crate ar
 recorded here. The format is based on [Keep a Changelog](https://keepachangelog.com),
 and the project aims to follow [Semantic Versioning](https://semver.org).
 
+## [0.2.1] - 2026-10-01
+
+### Added
+- **New `references/cpu-rendering.md`** for apps that drive egui themselves and
+  rasterize without a GPU (softbuffer): what to change when one keystroke pins a
+  CPU core, a new screen shows up only after the mouse moves, or toggles animate
+  in visible steps. It also covers `is_pointer_over_egui()` reporting `true`
+  everywhere under a `CentralPanel`, and the Wayland connect segfault from
+  `egui-winit`'s default clipboard feature. The skill now triggers on these
+  symptoms too.
+
 ## [0.2.0] - 2026-06-14
 
 ### Changed
@@ -49,5 +60,6 @@ and the project aims to follow [Semantic Versioning](https://semver.org).
 - Reference settings-form-with-tabs screen + snapshot eval; Claude Code plugin
   manifest and marketplace listing.
 
+[0.2.1]: https://github.com/oetiker/egui-shadcn/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/oetiker/egui-shadcn/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/oetiker/egui-shadcn/releases/tag/v0.1.0
