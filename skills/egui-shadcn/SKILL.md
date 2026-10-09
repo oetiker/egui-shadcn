@@ -46,9 +46,10 @@ loop.
    **Do not add `eframe` on the registry's account.** Add eframe only if your app
    already uses it as its backend. The components work with whatever egui
    integration you already have (eframe, egui-winit + softbuffer, etc.).
-3. **Apply the theme** once per frame at the top of your update/draw:
-   `egui_shadcn::Theme::dark().apply(ctx)` (or `light`). Read tokens via
-   `Theme::current(ctx)`.
+3. **Apply the theme once**, right after the egui context is created (in
+   eframe: the `run_native` app creator, on `cc.egui_ctx`):
+   `egui_shadcn::Theme::dark().apply(ctx)` (or `light`). Apply again only when
+   the theme itself changes. Read tokens via `Theme::current(ctx)`.
 4. **Decompose the design top-down:** app shell → panels
    (`SidePanel`/`TopBottomPanel`/`CentralPanel`); each region's **layout intent**
    (stack? row? grid? space-between?); components + their cva variants; token
@@ -123,7 +124,7 @@ project**. Keep that surface minimal.
   (`Size::relative/exact/remainder`) via the `layout` helpers.
 - Don't fight it with `available_width()` arithmetic when a helper exists.
 - Hover/active = opacity modulation of the base color, never a new hue.
-- Apply the theme every frame; read tokens via `Theme::current(ctx)`.
+- Apply the theme once, not every frame; read tokens via `Theme::current(ctx)`.
 - **No color or text-size literals outside `theme.rs`.** Colors come from
   `Palette`, sizes from `Metrics` (control heights, paddings, text sizes, icon
   size, border/ring widths). A value the palette lacks is a new token, not a

@@ -230,8 +230,8 @@ pub fn family(ctx: &egui::Context, name: &str) -> egui::FontFamily {
 // at one effective weight.  A future improvement would be to use font
 // variation settings once egui gains that support.
 fn install_fonts(ctx: &egui::Context) {
-    // Building the font atlas is expensive and `apply` runs every frame, so
-    // install the fonts only once per context.
+    // Building the font atlas is expensive, so install the fonts only once per
+    // context; re-applying (e.g. a light/dark toggle) only refreshes the style.
     let installed_id = egui::Id::new("egui_shadcn::fonts_installed");
     if ctx.data(|d| d.get_temp::<bool>(installed_id)).unwrap_or(false) {
         return;
@@ -278,9 +278,10 @@ impl Theme {
 
     /// Push this theme into the egui context: fonts, type scale, spacing, colors.
     ///
-    /// Safe to call once per frame: the font atlas is only built on the first
-    /// call per context (subsequent calls just refresh the style and stored
-    /// theme). egui-native widgets pick up the inactive/hovered/active visuals
+    /// Call once, right after the context is created, and again only when the
+    /// theme changes: the font atlas is only built on the first call per
+    /// context (later calls just refresh the style and stored theme). Not every
+    /// frame: that would silently undo any other code's style writes. egui-native widgets pick up the inactive/hovered/active visuals
     /// set here, while the crate's own custom components manage their own
     /// per-state colors.
     pub fn apply(&self, ctx: &egui::Context) {

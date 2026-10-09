@@ -37,5 +37,10 @@
   which draws both in one area.
 - **No multi-stop/radial gradients, no per-widget box-shadow stacks.** One `Shadow`
   per `Frame`; gradients need a hand-built `Mesh`.
-- **Apply theme every frame.** `Theme::apply` installs fonts once (guarded) and sets
-  style; read tokens via `Theme::current(ctx)` inside widgets.
+- **Apply the theme once, not every frame.** Call `Theme::apply` right after the
+  context is created, and again only when the theme changes (e.g. a light/dark
+  toggle). It sets the dark and the light style alike, so a system theme switch
+  keeps it, and eframe restores its saved state before the app creator runs
+  (styles are not saved). Re-applying every frame buys nothing and hides bugs:
+  code that overwrites the style is silently repainted over on the next frame
+  instead of showing. Read tokens via `Theme::current(ctx)` inside widgets.

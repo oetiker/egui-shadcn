@@ -26,9 +26,10 @@ pub struct SettingsState {
     pub weekly_digest: bool,
 }
 
-/// Render the settings screen into the given root `Ui`. Call `Theme::apply` on
-/// `ui.ctx()` once per frame before calling this. The caller owns the root `Ui`
-/// (e.g. from `eframe::run_ui_native`); this fills it with a `CentralPanel`.
+/// Render the settings screen into the given root `Ui`. `Theme::apply` must
+/// have been called on the context (once, when it was created). The caller
+/// owns the root `Ui` (e.g. from eframe's `App::ui`); this fills it with a
+/// `CentralPanel`.
 pub fn settings_ui(ui: &mut egui::Ui, state: &mut SettingsState) {
     let t = Theme::current(ui.ctx());
     egui::CentralPanel::default()
