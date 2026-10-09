@@ -22,27 +22,31 @@ users running `/plugin update`.
    - `.claude-plugin/plugin.json` → `version`
    - `.claude-plugin/marketplace.json` → `plugins[0].version`
 
-4. **Bump the external marketplace** in the separate repo
-   `oposs/claude-plugins` → `.claude-plugin/marketplace.json`, the `egui-shadcn`
-   entry's `version` (and description if it changed). This is the listing users
-   actually browse.
-
-5. **Commit, tag, push** (this repo):
+4. **Commit, tag, push** (this repo):
    ```bash
    git add -A && git commit -m "release: vX.Y.Z — <summary>"
    git tag -a vX.Y.Z -m "egui-shadcn vX.Y.Z"
    git push origin main && git push origin vX.Y.Z
    ```
 
-6. **Commit + push the marketplace repo** (`oposs/claude-plugins`):
+5. **The external marketplace follows on its own.** In `oposs/claude-plugins`,
+   an hourly GitHub Action (`track-versions.yml`) copies each plugin's
+   `plugin.json` version into `plugin-versions.json`; that commit is what makes
+   Claude re-resolve the plugin. Do not bump versions there by hand. To publish
+   without waiting for the hour:
    ```bash
-   git -C ../claude-plugins add .claude-plugin/marketplace.json
-   git -C ../claude-plugins commit -m "egui-shadcn: bump to vX.Y.Z"
-   git -C ../claude-plugins push origin main
+   gh workflow run track-versions.yml -R oposs/claude-plugins
    ```
+   The listing's description lives in that repo's
+   `.claude-plugin/marketplace.json`; change it there (by PR) only when the
+   plugin's purpose changed.
 
-7. **Verify**: both repos clean and in sync with origin; the tag is on the remote
-   (`git ls-remote --tags origin`).
+6. **Verify**: this repo is clean and in sync with origin, the tag is on the
+   remote (`git ls-remote --tags origin`), and the marketplace records the new
+   version:
+   ```bash
+   gh api repos/oposs/claude-plugins/contents/plugin-versions.json -q .content | base64 -d
+   ```
 
 ## Notes
 
