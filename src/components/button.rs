@@ -71,11 +71,12 @@ fn colors_for(variant: ButtonVariant, t: &Theme) -> Colors {
 impl Widget for Button {
     fn ui(self, ui: &mut Ui) -> Response {
         let t = Theme::current(ui.ctx());
+        let m = &t.metrics;
         let (height, pad_x) = match self.size {
-            ButtonSize::Sm => (32.0, 12.0),
-            ButtonSize::Default => (36.0, 16.0),
-            ButtonSize::Lg => (40.0, 24.0),
-            ButtonSize::Icon => (36.0, 0.0),
+            ButtonSize::Sm => (m.control_sm, m.pad_sm),
+            ButtonSize::Default => (m.control_md, m.pad_md),
+            ButtonSize::Lg => (m.control_lg, m.pad_lg),
+            ButtonSize::Icon => (m.control_md, 0.0),
         };
         let mut c = colors_for(self.variant, &t);
         if !self.enabled {
@@ -91,12 +92,12 @@ impl Widget for Button {
         let fam = crate::theme::family(ui.ctx(), crate::theme::FAMILY_MEDIUM);
         let galley = ui.painter().layout_no_wrap(
             self.text.clone(),
-            egui::FontId::new(14.0, fam.clone()),
+            egui::FontId::new(m.text_sm, fam.clone()),
             c.text,
         );
 
         let width = if self.size == ButtonSize::Icon {
-            36.0
+            height
         } else {
             galley.size().x + pad_x * 2.0
         };
@@ -124,13 +125,13 @@ impl Widget for Button {
                 ui.painter().rect_filled(rect, corner, fill);
             }
             if let Some(b) = c.border {
-                ui.painter().rect_stroke(rect, corner, Stroke::new(1.0, b), StrokeKind::Inside);
+                ui.painter().rect_stroke(rect, corner, Stroke::new(m.border, b), StrokeKind::Inside);
             }
             ui.painter().text(
                 rect.center(),
                 egui::Align2::CENTER_CENTER,
                 &self.text,
-                egui::FontId::new(14.0, fam.clone()),
+                egui::FontId::new(m.text_sm, fam.clone()),
                 c.text,
             );
         }

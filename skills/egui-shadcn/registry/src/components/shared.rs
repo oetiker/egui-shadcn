@@ -11,6 +11,7 @@ pub fn corner(r: f32) -> CornerRadius {
 /// Linearly blend `a` toward `b` by `t` in 0..=1 (sRGB space, good enough for hover).
 pub fn mix_toward(a: Color32, b: Color32, t: f32) -> Color32 {
     let lerp = |x: u8, y: u8| (x as f32 + (y as f32 - x as f32) * t).round() as u8;
+    // token-ok: computes a blend of two token colors, introduces none.
     Color32::from_rgba_unmultiplied(lerp(a.r(), b.r()), lerp(a.g(), b.g()), lerp(a.b(), b.b()), a.a())
 }
 
@@ -20,7 +21,7 @@ pub fn hover_fill(fill: Color32, bg: Color32) -> Color32 {
     mix_toward(fill, bg, 0.10)
 }
 
-/// Paint the shadcn focus ring: a 3px ring at 50% of the ring color, just outside
+/// Paint the shadcn focus ring: a `Metrics::ring`-wide ring at 50% of the ring color, just outside
 /// the widget rect, when the response has keyboard focus.
 pub fn focus_ring(ui: &Ui, resp: &Response, theme: &Theme, corner: f32) {
     if resp.has_focus() {
@@ -29,7 +30,7 @@ pub fn focus_ring(ui: &Ui, resp: &Response, theme: &Theme, corner: f32) {
         ui.painter().rect_stroke(
             rect,
             corner,
-            Stroke::new(3.0, ring),
+            Stroke::new(theme.metrics.ring, ring),
             egui::StrokeKind::Outside,
         );
     }

@@ -19,5 +19,5 @@ Popover, Table, Tooltip, DropdownMenu, Accordion, gradients. Build them as new
 files under `components/` following the custom-paint pattern in `button.rs`
 (floating components like Menubar/Dropdown/Dialog can lean on egui's native
 `menu`/`Area`/`Window` primitives, then theme them with the tokens). After it
-renders correctly, follow SKILL.md step 6 and **offer to open a PR upstream** so
+renders correctly, follow SKILL.md Part B and **offer to open a PR upstream** so
 the registry grows for everyone.

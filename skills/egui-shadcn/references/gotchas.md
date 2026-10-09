@@ -18,7 +18,15 @@
 - **`strong()` is not a bold font.** egui's `strong` brightens color. For weight use the
   named families via `theme::family(ctx, FAMILY_MEDIUM|FAMILY_SEMIBOLD)`.
 - **No CSS transitions.** Animate manually with `ctx.animate_bool(id, on)` and lerp
-  (see `switch.rs`).
+  (see `switch.rs`). `animate_*` honours `animation_time`; set to 0 (as
+  `cpu-rendering.md` advises) it jumps to the target, which is what you want.
+- **A fade you time yourself does not honour `animation_time`.** Opacity
+  computed from `ctx.input(|i| i.time)` (a hint that fades out after N seconds)
+  only moves while frames are drawn. `request_repaint_after(N)` alone draws one
+  frame at the end, so the element vanishes instead of fading. Either repaint
+  every frame while the fade runs (`ctx.request_repaint()` while `0 < alpha < 1`)
+  or drop the fade and show/hide in one step, which is the right call under a
+  CPU rasterizer.
 - **No multi-stop/radial gradients, no per-widget box-shadow stacks.** One `Shadow`
   per `Frame`; gradients need a hand-built `Mesh`.
 - **Apply theme every frame.** `Theme::apply` installs fonts once (guarded) and sets

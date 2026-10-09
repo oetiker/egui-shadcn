@@ -6,7 +6,8 @@ use egui::{RichText, Ui};
 
 pub fn card_title(ui: &mut Ui, text: &str) {
     let fam = family(ui.ctx(), FAMILY_SEMIBOLD);
-    ui.label(RichText::new(text).family(fam).size(16.0));
+    let size = crate::Theme::current(ui.ctx()).metrics.text_base;
+    ui.label(RichText::new(text).family(fam).size(size));
 }
 
 pub fn card_description(ui: &mut Ui, text: &str) {

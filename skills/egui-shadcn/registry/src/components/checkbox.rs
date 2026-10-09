@@ -9,7 +9,7 @@ use egui::{CornerRadius, Sense, Stroke, StrokeKind, Ui, Vec2};
 /// When unchecked: transparent with a 1px `palette.border` stroke.
 pub fn checkbox(ui: &mut Ui, checked: &mut bool) -> egui::Response {
     let t = Theme::current(ui.ctx());
-    let size = Vec2::splat(16.0);
+    let size = Vec2::splat(t.metrics.icon);
     let (rect, mut resp) = ui.allocate_exact_size(size, Sense::click());
     if resp.clicked() {
         *checked = !*checked;
@@ -40,7 +40,7 @@ pub fn checkbox(ui: &mut Ui, checked: &mut bool) -> egui::Response {
         ui.painter().rect_stroke(
             rect,
             corner,
-            Stroke::new(1.0, t.palette.border),
+            Stroke::new(t.metrics.border, t.palette.border),
             StrokeKind::Inside,
         );
     }

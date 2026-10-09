@@ -4,4 +4,4 @@ pub mod layout;
 pub mod reference;
 pub mod theme;
 
-pub use theme::{theme, Palette, Theme};
+pub use theme::{theme, Metrics, Palette, Theme};

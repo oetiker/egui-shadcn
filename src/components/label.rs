@@ -5,10 +5,11 @@ use egui::{RichText, Ui};
 
 pub fn label(ui: &mut Ui, text: &str) -> egui::Response {
     let family = crate::theme::family(ui.ctx(), FAMILY_MEDIUM);
-    ui.label(RichText::new(text).family(family).size(14.0))
+    let size = crate::Theme::current(ui.ctx()).metrics.text_sm;
+    ui.label(RichText::new(text).family(family).size(size))
 }
 
 pub fn description(ui: &mut Ui, text: &str) -> egui::Response {
-    let muted = crate::Theme::current(ui.ctx()).palette.muted_foreground;
-    ui.label(RichText::new(text).size(14.0).color(muted))
+    let t = crate::Theme::current(ui.ctx());
+    ui.label(RichText::new(text).size(t.metrics.text_sm).color(t.palette.muted_foreground))
 }

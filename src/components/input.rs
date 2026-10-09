@@ -15,7 +15,7 @@ pub struct Input<'a> {
 
 impl<'a> Input<'a> {
     pub fn new(text: &'a mut String) -> Self {
-        Self { text, hint: String::new(), password: false, max_width: 280.0, id_source: None }
+        Self { text, hint: String::new(), password: false, max_width: f32::NAN, id_source: None }
     }
     pub fn hint(mut self, h: impl Into<String>) -> Self {
         self.hint = h.into();
@@ -25,7 +25,8 @@ impl<'a> Input<'a> {
         self.password = yes;
         self
     }
-    /// Override the default 280px maximum width. Pass `f32::INFINITY` for full-width.
+    /// Override the default maximum width (`Metrics::field_max_width`). Pass
+    /// `f32::INFINITY` for full-width.
     pub fn max_width(mut self, w: f32) -> Self {
         self.max_width = w;
         self
@@ -47,21 +48,22 @@ impl<'a> Widget for Input<'a> {
         let mut edit = TextEdit::singleline(self.text)
             .hint_text(self.hint)
             .password(self.password)
-            .margin(Margin::symmetric(12, 8))
+            .margin(Margin::symmetric(t.metrics.pad_sm as i8, t.metrics.gap as i8))
             .vertical_align(egui::Align::Center)
             .background_color(t.palette.input)
             .text_color(t.palette.foreground);
         if let Some(id_source) = self.id_source {
             edit = edit.id_salt(id_source);
         }
-        let resp = ui.add_sized(Vec2::new(ui.available_width().min(self.max_width), 36.0), edit);
+        let max_width = if self.max_width.is_nan() { t.metrics.field_max_width } else { self.max_width };
+        let resp = ui.add_sized(Vec2::new(ui.available_width().min(max_width), t.metrics.control_md), edit);
         // Our own 1px border over egui's frame: shadcn `border-input`, turning
         // `ring`-colored on focus (`focus-visible:border-ring`).
         let border = if resp.has_focus() { t.palette.ring } else { t.palette.border };
         ui.painter().rect_stroke(
             resp.rect,
             corner,
-            egui::Stroke::new(1.0, border),
+            egui::Stroke::new(t.metrics.border, border),
             egui::StrokeKind::Inside,
         );
         focus_ring(ui, &resp, &t, t.radius_md());

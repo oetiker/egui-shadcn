@@ -6,7 +6,7 @@ use egui::Ui;
 pub fn select(ui: &mut Ui, id: &str, selected: &mut usize, options: &[&str]) -> bool {
     let mut changed = false;
     let current = options.get(*selected).copied().unwrap_or("");
-    let w = ui.available_width().min(280.0);
+    let w = ui.available_width().min(crate::Theme::current(ui.ctx()).metrics.field_max_width);
     egui::ComboBox::from_id_salt(id)
         .selected_text(current)
         .width(w)

@@ -87,7 +87,10 @@ to the library's standard so the next project gets it for free.
 3. A synced copy under `skills/egui-shadcn/registry/` — the canonical `src/` and
    the registry copy must stay **byte-identical**.
 4. A row in `references/component-map.md`.
-5. Build + `clippy --all-targets` warning-clean.
+5. Colors and sizes from `Palette`/`Metrics` only (`tests/tokens.rs` fails
+   otherwise), and a `widget_info` call so the widget is visible to screen
+   readers.
+6. Build + `clippy --all-targets` warning-clean.
 
 Then **offer to open a PR** to `github.com/oetiker/egui-shadcn` (a nudge, not an
 automatic pipeline — it needs the user's go-ahead and push/fork access).
@@ -119,9 +122,28 @@ project**. Keep that surface minimal.
 - Don't fight it with `available_width()` arithmetic when a helper exists.
 - Hover/active = opacity modulation of the base color, never a new hue.
 - Apply the theme every frame; read tokens via `Theme::current(ctx)`.
+- **No color or text-size literals outside `theme.rs`.** Colors come from
+  `Palette`, sizes from `Metrics` (control heights, paddings, text sizes, icon
+  size, border/ring widths). A value the palette lacks is a new token, not a
+  literal. Geometry private to one widget's drawing (a checkmark path) may stay
+  local.
+- **Every custom-painted widget reports itself** with `resp.widget_info(..)`
+  (role, label, enabled, selected), or screen readers see nothing.
 
 ## Acceptance bar
 The reference `egui_shadcn::reference::settings_ui` (a settings screen whose tabs
 double as a component gallery) is the quality yardstick: match its restraint —
 subtle 1px borders, one radius, muted palette, 14px text, consistent focus rings.
 Run `cargo run --example settings` to see it live.
+
+Before calling a screen done, scan the project's UI files for literals that
+bypass the theme. Carry a positive control, because a pattern that matches
+nothing looks exactly like a clean codebase:
+
+```bash
+printf 'Color32::from_rgb(1,2,3)\n' | grep -cE 'Color32::(from_|WHITE|BLACK)|from_(black|white)_alpha|FontId::[a-z_]+\([0-9]|\.size\([0-9]'   # must print 1
+grep -nE 'Color32::(from_|WHITE|BLACK)|from_(black|white)_alpha|FontId::[a-z_]+\([0-9]|\.size\([0-9]' src/ui/*.rs   # your UI files
+```
+
+Each hit is either a missing token or carries a `// token-ok: <reason>` comment
+on the line above. The registry runs the same check as `tests/tokens.rs`.

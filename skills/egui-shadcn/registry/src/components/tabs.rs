@@ -7,9 +7,10 @@ use egui::{Align2, CornerRadius, FontId, Sense, Ui, Vec2};
 pub fn tab_bar(ui: &mut Ui, active: &mut usize, labels: &[&str]) -> bool {
     let t = Theme::current(ui.ctx());
     let mut changed = false;
+    // shadcn: `h-9 p-[3px]` track; the trigger fills what the padding leaves.
     let pad = 3.0;
-    let trigger_h = 30.0;
-    let bar_h = trigger_h + pad * 2.0;
+    let bar_h = t.metrics.control_md;
+    let trigger_h = bar_h - pad * 2.0;
 
     let total_w = ui.available_width();
     let (rect, _resp) = ui.allocate_exact_size(Vec2::new(total_w, bar_h), Sense::hover());
@@ -47,7 +48,7 @@ pub fn tab_bar(ui: &mut Ui, active: &mut usize, labels: &[&str]) -> bool {
             tr.center(),
             Align2::CENTER_CENTER,
             lbl,
-            FontId::proportional(14.0),
+            FontId::proportional(t.metrics.text_sm),
             color,
         );
         resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, lbl));

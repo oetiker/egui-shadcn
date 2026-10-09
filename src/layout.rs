@@ -55,14 +55,14 @@ pub fn card<R>(ui: &mut Ui, add: impl FnOnce(&mut Ui) -> R) -> R {
     let theme = Theme::current(ui.ctx());
     Frame::new()
         .fill(theme.palette.card)
-        .stroke(Stroke::new(1.0, theme.palette.border))
+        .stroke(Stroke::new(theme.metrics.border, theme.palette.border))
         .corner_radius(CornerRadius::same(theme.radius_xl() as u8))
-        .inner_margin(Margin::same(24))
+        .inner_margin(Margin::same(theme.metrics.card_padding as i8))
         .shadow(egui::epaint::Shadow {
             offset: [0, 1],
             blur: 3,
             spread: 0,
-            color: egui::Color32::from_black_alpha(20),
+            color: theme.palette.shadow,
         })
         .show(ui, |ui| add(ui))
         .inner

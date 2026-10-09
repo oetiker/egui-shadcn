@@ -25,6 +25,8 @@ pub struct Palette {
     pub border: Color32,
     pub input: Color32,
     pub ring: Color32,
+    /// Drop-shadow color of raised surfaces (`shadow-sm`).
+    pub shadow: Color32,
 }
 
 impl Palette {
@@ -49,6 +51,7 @@ impl Palette {
             border: c(0.922, 0.0, 0.0),
             input: c(0.922, 0.0, 0.0),
             ring: c(0.708, 0.0, 0.0),
+            shadow: Color32::from_black_alpha(20),
         }
     }
 
@@ -73,6 +76,7 @@ impl Palette {
             border: ca(1.0, 0.0, 0.0, 0.10),
             input: ca(1.0, 0.0, 0.0, 0.15),
             ring: c(0.556, 0.0, 0.0), // solid mid-gray (border/input above are translucent white)
+            shadow: Color32::from_black_alpha(20),
         }
     }
 }
@@ -81,15 +85,85 @@ impl Palette {
 pub struct Theme {
     pub palette: Palette,
     pub radius: f32,
+    pub metrics: Metrics,
     pub dark: bool,
+}
+
+/// Size tokens, in logical px. Defaults are shadcn v4's Tailwind classes; the
+/// class each one stands for is noted. Components read sizes from here, never
+/// from literals, so one change restyles every screen. Geometry that belongs to
+/// a single widget's drawing (a checkmark path, a knob inset) stays local.
+///
+/// Override with struct update syntax:
+/// `Theme { metrics: Metrics { control_md: 32.0, ..Metrics::default() }, ..Theme::dark() }`.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Metrics {
+    /// `text-xs`: badges, captions (`TextStyle::Small`).
+    pub text_xs: f32,
+    /// `text-sm`: body text, labels, controls (`TextStyle::Body`/`Button`).
+    pub text_sm: f32,
+    /// `text-base`: card titles.
+    pub text_base: f32,
+    /// `TextStyle::Monospace`.
+    pub text_mono: f32,
+    /// `TextStyle::Heading`.
+    pub text_heading: f32,
+    /// `h-8`: small controls.
+    pub control_sm: f32,
+    /// `h-9`: default control height (buttons, inputs, tab bars).
+    pub control_md: f32,
+    /// `h-10`: large controls.
+    pub control_lg: f32,
+    /// `px-3`: horizontal padding of small controls and inputs.
+    pub pad_sm: f32,
+    /// `px-4`: horizontal padding of default controls.
+    pub pad_md: f32,
+    /// `px-6`: horizontal padding of large controls.
+    pub pad_lg: f32,
+    /// `gap-2`: default spacing between items.
+    pub gap: f32,
+    /// `p-6`: card padding.
+    pub card_padding: f32,
+    /// Default maximum width of text fields and selects.
+    pub field_max_width: f32,
+    /// `size-4`: icons and checkbox boxes.
+    pub icon: f32,
+    /// `border`: hairline width.
+    pub border: f32,
+    /// `ring-[3px]`: focus ring width.
+    pub ring: f32,
+}
+
+impl Default for Metrics {
+    fn default() -> Self {
+        Self {
+            text_xs: 12.0,
+            text_sm: 14.0,
+            text_base: 16.0,
+            text_mono: 13.0,
+            text_heading: 20.0,
+            control_sm: 32.0,
+            control_md: 36.0,
+            control_lg: 40.0,
+            pad_sm: 12.0,
+            pad_md: 16.0,
+            pad_lg: 24.0,
+            gap: 8.0,
+            card_padding: 24.0,
+            field_max_width: 280.0,
+            icon: 16.0,
+            border: 1.0,
+            ring: 3.0,
+        }
+    }
 }
 
 impl Theme {
     pub fn light() -> Self {
-        Self { palette: Palette::light(), radius: 10.0, dark: false }
+        Self { palette: Palette::light(), radius: 10.0, metrics: Metrics::default(), dark: false }
     }
     pub fn dark() -> Self {
-        Self { palette: Palette::dark(), radius: 10.0, dark: true }
+        Self { palette: Palette::dark(), radius: 10.0, metrics: Metrics::default(), dark: true }
     }
 
     pub fn radius_sm(&self) -> f32 { (self.radius - 4.0).max(0.0) }
@@ -187,37 +261,39 @@ impl Theme {
     pub fn apply(&self, ctx: &egui::Context) {
         install_fonts(ctx);
         let p = &self.palette;
+        let m = &self.metrics;
+        let hairline = m.border;
 
         ctx.global_style_mut(|s| {
             use FontFamily::Proportional;
             s.text_styles = [
-                (TextStyle::Small, FontId::new(12.0, Proportional)),
-                (TextStyle::Body, FontId::new(14.0, Proportional)),
-                (TextStyle::Button, FontId::new(14.0, Proportional)),
-                (TextStyle::Monospace, FontId::new(13.0, FontFamily::Monospace)),
-                (TextStyle::Heading, FontId::new(20.0, FontFamily::Name(FAMILY_SEMIBOLD.into()))),
+                (TextStyle::Small, FontId::new(m.text_xs, Proportional)),
+                (TextStyle::Body, FontId::new(m.text_sm, Proportional)),
+                (TextStyle::Button, FontId::new(m.text_sm, Proportional)),
+                (TextStyle::Monospace, FontId::new(m.text_mono, FontFamily::Monospace)),
+                (TextStyle::Heading, FontId::new(m.text_heading, FontFamily::Name(FAMILY_SEMIBOLD.into()))),
             ]
             .into();
 
-            s.spacing.item_spacing = egui::vec2(8.0, 8.0);
-            s.spacing.button_padding = egui::vec2(16.0, 8.0);
+            s.spacing.item_spacing = egui::vec2(m.gap, m.gap);
+            s.spacing.button_padding = egui::vec2(m.pad_md, m.gap);
             s.spacing.window_margin = egui::Margin::same(0);
-            s.spacing.interact_size.y = 36.0;
+            s.spacing.interact_size.y = m.control_md;
 
             let v = &mut s.visuals;
             v.dark_mode = self.dark;
             v.panel_fill = p.background;
             v.window_fill = p.card;
-            v.window_stroke = Stroke::new(1.0, p.border);
+            v.window_stroke = Stroke::new(hairline, p.border);
             v.extreme_bg_color = p.input;
             v.faint_bg_color = p.muted;
             v.override_text_color = Some(p.foreground);
             v.hyperlink_color = p.primary;
             v.selection.bg_fill = p.primary.gamma_multiply(0.35);
-            v.selection.stroke = Stroke::new(1.0, p.ring);
+            v.selection.stroke = Stroke::new(hairline, p.ring);
             v.widgets.noninteractive.bg_fill = p.background;
-            v.widgets.noninteractive.bg_stroke = Stroke::new(1.0, p.border);
-            v.widgets.noninteractive.fg_stroke = Stroke::new(1.0, p.foreground);
+            v.widgets.noninteractive.bg_stroke = Stroke::new(hairline, p.border);
+            v.widgets.noninteractive.fg_stroke = Stroke::new(hairline, p.foreground);
             for w in [
                 &mut v.widgets.inactive,
                 &mut v.widgets.hovered,
@@ -226,8 +302,8 @@ impl Theme {
             ] {
                 w.bg_fill = p.secondary;
                 w.weak_bg_fill = p.secondary;
-                w.bg_stroke = Stroke::new(1.0, p.border);
-                w.fg_stroke = Stroke::new(1.0, p.foreground);
+                w.bg_stroke = Stroke::new(hairline, p.border);
+                w.fg_stroke = Stroke::new(hairline, p.foreground);
                 w.corner_radius = egui::CornerRadius::same(self.radius_md() as u8);
             }
             // shadcn uses the `accent` token for hover/active feedback so

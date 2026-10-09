@@ -12,10 +12,25 @@ and the project aims to follow [Semantic Versioning](https://semver.org).
   shadcn's `disabled` buttons. Screen readers announce it as disabled.
 - `Input::id_source("…")` gives a text field a fixed id, so code elsewhere can
   focus it or a test can find it, however many widgets come before it.
+- Sizes are now part of the theme: `Theme.metrics` holds text sizes, control
+  heights, paddings, the default gap, card padding, field width, icon size and
+  border/ring widths. Change one value and every component follows.
+- `Palette.shadow` sets the card shadow color.
+- Badges are announced to screen readers.
+- The skill now requires colors and text sizes to come from the theme, and
+  gives a check to run over a project's own UI files before calling a screen
+  done. New components must also report themselves to screen readers.
 - `layout::wrap_row` lays items out in a row that wraps onto the next line when
   it runs out of width, with the same gap between items and between lines.
 
 ### Changed
+- **Breaking:** code that builds a `Theme` or `Palette` field by field must add
+  `metrics` (use `Metrics::default()`) and `shadow`. Projects using
+  `Theme::light()`/`dark()` are unaffected.
+- The destructive badge's text uses the `destructive_foreground` color instead
+  of pure white.
+- The skill's advice on animations no longer contradicts itself: a fade timed
+  by hand vanishes instead of fading unless it repaints while it runs.
 - A focused text field's border now turns the `ring` colour, like shadcn's
   inputs, instead of staying the plain `border` colour under the focus ring.
 
