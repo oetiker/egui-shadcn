@@ -77,6 +77,22 @@ fn colors_for(variant: ButtonVariant, t: &Theme) -> Colors {
     }
 }
 
+/// Colors of a hovered button. Ghost and Outline swap to the `accent` pair
+/// (shadcn `hover:bg-accent hover:text-accent-foreground`): the text must
+/// follow the fill, or a palette whose `accent` is saturated leaves light text
+/// on a light fill. Link has no background on hover (text-decoration only);
+/// the solid variants lighten toward the page background.
+fn hovered_colors(variant: ButtonVariant, c: Colors, t: &Theme) -> Colors {
+    let p = &t.palette;
+    match variant {
+        ButtonVariant::Ghost | ButtonVariant::Outline => {
+            Colors { fill: p.accent, text: p.accent_foreground, border: c.border }
+        }
+        ButtonVariant::Link => Colors { fill: Color32::TRANSPARENT, ..c },
+        _ => Colors { fill: hover_fill(c.fill, p.background), ..c },
+    }
+}
+
 impl Widget for Button {
     fn ui(self, ui: &mut Ui) -> Response {
         let t = Theme::current(ui.ctx());
@@ -123,15 +139,10 @@ impl Widget for Button {
         });
 
         let hovered = resp.hovered();
-        let mut fill = c.fill;
         if self.enabled && hovered {
-            fill = match self.variant {
-                ButtonVariant::Ghost => t.palette.accent,
-                // Link has no background on hover (text-decoration only)
-                ButtonVariant::Link => Color32::TRANSPARENT,
-                _ => hover_fill(fill, t.palette.background),
-            };
+            c = hovered_colors(self.variant, c, &t);
         }
+        let fill = c.fill;
 
         let corner = corner(t.radius_md());
         if ui.is_rect_visible(rect) {
@@ -157,5 +168,37 @@ impl Widget for Button {
         }
         focus_ring(ui, &resp, &t, t.radius_md());
         resp
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ghost_and_outline_hover_switch_text_with_fill() {
+        // A palette whose accent is as light as its foreground (the dark
+        // theme's primary pair), so `foreground` text on it would vanish: the
+        // text must become `accent_foreground`.
+        let mut t = Theme::dark();
+        t.palette.accent = t.palette.primary;
+        t.palette.accent_foreground = t.palette.primary_foreground;
+        for v in [ButtonVariant::Ghost, ButtonVariant::Outline] {
+            let h = hovered_colors(v, colors_for(v, &t), &t);
+            assert_eq!(h.fill, t.palette.accent);
+            assert_eq!(h.text, t.palette.accent_foreground);
+        }
+        // Outline keeps its border on hover.
+        let h = hovered_colors(ButtonVariant::Outline, colors_for(ButtonVariant::Outline, &t), &t);
+        assert_eq!(h.border, Some(t.palette.border));
+    }
+
+    #[test]
+    fn solid_hover_keeps_text() {
+        let t = Theme::dark();
+        let c = colors_for(ButtonVariant::Default, &t);
+        let h = hovered_colors(ButtonVariant::Default, colors_for(ButtonVariant::Default, &t), &t);
+        assert_eq!(h.text, c.text);
+        assert_ne!(h.fill, c.fill);
     }
 }

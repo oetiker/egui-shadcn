@@ -19,7 +19,7 @@ pub fn checkbox(ui: &mut Ui, checked: &mut bool) -> egui::Response {
     if *checked {
         ui.painter().rect_filled(rect, corner, t.palette.primary);
         let c = rect.shrink(3.5);
-        let stroke = Stroke::new(2.0, t.palette.primary_foreground);
+        let stroke = Stroke::new(2.0_f32, t.palette.primary_foreground);
         // Left arm of checkmark: bottom-left corner to middle-bottom
         ui.painter().line_segment(
             [

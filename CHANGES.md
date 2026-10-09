@@ -4,6 +4,16 @@ All notable changes to the **egui-shadcn** plugin and the `egui_shadcn` crate ar
 recorded here. The format is based on [Keep a Changelog](https://keepachangelog.com),
 and the project aims to follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+- Ghost and Outline buttons kept their normal text colour on hover while the
+  background turned to `accent`. With a palette whose `accent` is bright,
+  the label became unreadable. Hovered, they now use `accent_foreground`
+  for text and icon, as shadcn does.
+- `Stroke::new(2.0, …)` in the checkbox drew a `float_literal_f32_fallback`
+  warning from newer Rust compilers, which will become an error.
+
 ## [0.3.0] - 2026-10-09
 
 ### Added
