@@ -4,6 +4,17 @@ All notable changes to the **egui-shadcn** plugin and the `egui_shadcn` crate ar
 recorded here. The format is based on [Keep a Changelog](https://keepachangelog.com),
 and the project aims to follow [Semantic Versioning](https://semver.org).
 
+## [0.3.2] - 2026-10-09
+
+### Changed
+- The skill, the gotchas and the registry README told you to call
+  `Theme::apply` every frame. They now say to call it once, right after the
+  egui context is created (for eframe, in the `run_native` app creator), and
+  again only when the theme changes. Re-applying every frame silently undid
+  any other code's style changes, so such bugs never showed.
+- The settings example applies the theme in the eframe app creator instead
+  of on every frame.
+
 ## [0.3.1] - 2026-10-09
 
 ### Fixed
@@ -110,6 +121,7 @@ and the project aims to follow [Semantic Versioning](https://semver.org).
 - Reference settings-form-with-tabs screen + snapshot eval; Claude Code plugin
   manifest and marketplace listing.
 
+[0.3.2]: https://github.com/oetiker/egui-shadcn/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/oetiker/egui-shadcn/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/oetiker/egui-shadcn/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/oetiker/egui-shadcn/compare/v0.2.0...v0.2.1
