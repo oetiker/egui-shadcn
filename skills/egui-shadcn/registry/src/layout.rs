@@ -14,6 +14,17 @@ pub fn row<R>(ui: &mut Ui, gap: f32, add: impl FnOnce(&mut Ui) -> R) -> R {
     .inner
 }
 
+/// Horizontal stack that wraps onto further lines when it runs out of width
+/// (flex-direction: row; flex-wrap: wrap; gap: N). The gap applies both between
+/// items on a line and between wrapped lines.
+pub fn wrap_row<R>(ui: &mut Ui, gap: f32, add: impl FnOnce(&mut Ui) -> R) -> R {
+    ui.horizontal_wrapped(|ui| {
+        ui.spacing_mut().item_spacing = egui::vec2(gap, gap);
+        add(ui)
+    })
+    .inner
+}
+
 /// Vertical stack with an explicit gap (flex-direction: column; gap: N).
 pub fn vstack<R>(ui: &mut Ui, gap: f32, add: impl FnOnce(&mut Ui) -> R) -> R {
     ui.vertical(|ui| {

@@ -4,6 +4,21 @@ All notable changes to the **egui-shadcn** plugin and the `egui_shadcn` crate ar
 recorded here. The format is based on [Keep a Changelog](https://keepachangelog.com),
 and the project aims to follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- `Button::enabled(false)` greys a button out halfway toward the page
+  background and stops it from reacting to clicks or taking focus, like
+  shadcn's `disabled` buttons. Screen readers announce it as disabled.
+- `Input::id_source("…")` gives a text field a fixed id, so code elsewhere can
+  focus it or a test can find it, however many widgets come before it.
+- `layout::wrap_row` lays items out in a row that wraps onto the next line when
+  it runs out of width, with the same gap between items and between lines.
+
+### Changed
+- A focused text field's border now turns the `ring` colour, like shadcn's
+  inputs, instead of staying the plain `border` colour under the focus ring.
+
 ## [0.2.1] - 2026-10-01
 
 ### Added

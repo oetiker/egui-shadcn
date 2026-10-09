@@ -235,3 +235,92 @@ fn card_badge_select_snapshot() {
     h.run();
     h.snapshot("card_badge_select");
 }
+
+#[test]
+fn disabled_button_ignores_clicks() {
+    use egui_kittest::kittest::Queryable;
+    use egui_kittest::Harness;
+    use egui_shadcn::components::button::Button;
+    use egui_shadcn::Theme;
+    use std::cell::Cell;
+    let clicked = Cell::new(false);
+    let mut h = Harness::new_ui(|ui| {
+        Theme::dark().apply(ui.ctx());
+        if ui.add(Button::new("Save").enabled(false)).clicked() {
+            clicked.set(true);
+        }
+    });
+    h.get_by_label("Save").click();
+    h.run();
+    assert!(!clicked.get(), "disabled button registered a click");
+}
+
+/// shadcn `focus-visible:border-ring`: the input's own 1px border turns
+/// ring-colored while focused, under the separate focus ring.
+#[test]
+fn focused_input_border_turns_ring_colored() {
+    use egui_shadcn::components::input::Input;
+    use egui_shadcn::Theme;
+
+    fn border_colors(ctx: &egui::Context, text: &mut String, focus: bool) -> Vec<egui::Color32> {
+        let raw = egui::RawInput {
+            screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(400.0, 200.0))),
+            ..Default::default()
+        };
+        let out = ctx.run_ui(raw, |ui| {
+            Theme::dark().apply(ui.ctx());
+            let resp = ui.add(Input::new(text).id_source("field"));
+            if focus {
+                resp.request_focus();
+            }
+        });
+        fn walk(s: &egui::Shape, out: &mut Vec<egui::Color32>) {
+            match s {
+                egui::Shape::Rect(r) if r.stroke.width == 1.0 => out.push(r.stroke.color),
+                egui::Shape::Vec(v) => v.iter().for_each(|s| walk(s, out)),
+                _ => {}
+            }
+        }
+        let mut colors = Vec::new();
+        out.shapes.iter().for_each(|c| walk(&c.shape, &mut colors));
+        colors
+    }
+
+    let ctx = egui::Context::default();
+    let mut text = String::new();
+    let p = Theme::dark().palette;
+    // Our border is painted over egui's own TextEdit frame (which already uses
+    // `selection.stroke` on focus), so the visible border is the last 1px stroke.
+    let unfocused = border_colors(&ctx, &mut text, false);
+    assert_eq!(unfocused.last(), Some(&p.border), "unfocused border: {unfocused:?}");
+    border_colors(&ctx, &mut text, true); // focus lands next frame
+    let focused = border_colors(&ctx, &mut text, false);
+    assert_eq!(focused.last(), Some(&p.ring), "focused border: {focused:?}");
+}
+
+/// `Input::id_source` gives the field an id that does not depend on how many
+/// widgets precede it, so callers can address it from outside.
+#[test]
+fn input_id_source_is_stable() {
+    use egui_shadcn::components::input::Input;
+    fn id_after(ctx: &egui::Context, preceding: usize, salt: Option<&'static str>) -> egui::Id {
+        let mut text = String::new();
+        let mut id = None;
+        let _ = ctx.run_ui(egui::RawInput::default(), |ui| {
+            for i in 0..preceding {
+                ui.label(format!("filler {i}"));
+            }
+            let input = Input::new(&mut text);
+            let input = match salt {
+                Some(s) => input.id_source(s),
+                None => input,
+            };
+            id = Some(ui.add(input).id);
+        });
+        id.expect("input was added")
+    }
+    let ctx = egui::Context::default();
+    // Control: without a salt the id follows widget position.
+    assert_ne!(id_after(&ctx, 1, None), id_after(&ctx, 3, None));
+    assert_eq!(id_after(&ctx, 1, Some("login-user")), id_after(&ctx, 3, Some("login-user")));
+}
