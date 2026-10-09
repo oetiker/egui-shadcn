@@ -7,6 +7,11 @@ and the project aims to follow [Semantic Versioning](https://semver.org).
 ## [Unreleased]
 
 ### Added
+- Dialog, Popover and Tooltip components in the shadcn style. A dialog closes
+  on Esc, a click on the dimmed backdrop, or its × button. A popover opens and
+  closes when its trigger is clicked and closes when you click elsewhere.
+  Their colors, shadows and widths are theme settings (`Palette.overlay`,
+  `Metrics.dialog_width`, `Metrics.popover_width`).
 - Icons without an image loader. The new `icongen` tool (in `tools/icongen/`)
   turns Lucide or other outline SVG icons into Rust constants, and
   `IconView` / `Button::icon` draw them in the theme's colors and sizes. A

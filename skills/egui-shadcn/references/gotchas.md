@@ -27,6 +27,14 @@
   every frame while the fade runs (`ctx.request_repaint()` while `0 < alpha < 1`)
   or drop the fade and show/hide in one step, which is the right call under a
   CPU rasterizer.
+- **One remembered popup.** egui's popup memory holds one open popup id, so
+  opening a Popover closes any open menu or combo box (as on the web). For a
+  popover inside a popover, keep the inner one's state yourself
+  (`egui::Popup::..open_bool(&mut flag)`).
+- **Overlays must share an area or use distinct `Order`s.** A backdrop and a
+  card in two areas at the same `Order` can swap z-order once another window
+  has been shown, leaving the backdrop on top. `Dialog` uses `egui::Modal`,
+  which draws both in one area.
 - **No multi-stop/radial gradients, no per-widget box-shadow stacks.** One `Shadow`
   per `Frame`; gradients need a hand-built `Mesh`.
 - **Apply theme every frame.** `Theme::apply` installs fonts once (guarded) and sets

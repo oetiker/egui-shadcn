@@ -30,6 +30,14 @@ pub struct Icon {
     pub segs: &'static [Seg],
 }
 
+/// The dialog close cross (Lucide `x`, ISC), built in because the registry's
+/// own components need it and projects generate their icon sets separately.
+pub const CLOSE: Icon = Icon {
+    name: "close",
+    size: 24.0,
+    segs: &[Seg::M(18.0, 6.0), Seg::L(6.0, 18.0), Seg::M(6.0, 6.0), Seg::L(18.0, 18.0)],
+};
+
 /// Curve flattening tolerance in screen points.
 const TOLERANCE: f32 = 0.1;
 

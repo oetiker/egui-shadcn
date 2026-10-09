@@ -27,6 +27,8 @@ pub struct Palette {
     pub ring: Color32,
     /// Drop-shadow color of raised surfaces (`shadow-sm`).
     pub shadow: Color32,
+    /// Modal backdrop (`bg-black/50`).
+    pub overlay: Color32,
 }
 
 impl Palette {
@@ -52,6 +54,7 @@ impl Palette {
             input: c(0.922, 0.0, 0.0),
             ring: c(0.708, 0.0, 0.0),
             shadow: Color32::from_black_alpha(20),
+            overlay: Color32::from_black_alpha(128),
         }
     }
 
@@ -77,6 +80,7 @@ impl Palette {
             input: ca(1.0, 0.0, 0.0, 0.15),
             ring: c(0.556, 0.0, 0.0), // solid mid-gray (border/input above are translucent white)
             shadow: Color32::from_black_alpha(20),
+            overlay: Color32::from_black_alpha(128),
         }
     }
 }
@@ -104,6 +108,8 @@ pub struct Metrics {
     pub text_sm: f32,
     /// `text-base`: card titles.
     pub text_base: f32,
+    /// `text-lg`: dialog titles.
+    pub text_lg: f32,
     /// `TextStyle::Monospace`.
     pub text_mono: f32,
     /// `TextStyle::Heading`.
@@ -126,6 +132,10 @@ pub struct Metrics {
     pub card_padding: f32,
     /// Default maximum width of text fields and selects.
     pub field_max_width: f32,
+    /// `max-w-lg`: dialog width.
+    pub dialog_width: f32,
+    /// `w-72`: popover width.
+    pub popover_width: f32,
     /// `size-4`: icons and checkbox boxes.
     pub icon: f32,
     /// Icon stroke width in icon units (Lucide's 24-unit grid draws with 2).
@@ -142,6 +152,7 @@ impl Default for Metrics {
             text_xs: 12.0,
             text_sm: 14.0,
             text_base: 16.0,
+            text_lg: 18.0,
             text_mono: 13.0,
             text_heading: 20.0,
             control_sm: 32.0,
@@ -153,6 +164,8 @@ impl Default for Metrics {
             gap: 8.0,
             card_padding: 24.0,
             field_max_width: 280.0,
+            dialog_width: 512.0,
+            popover_width: 288.0,
             icon: 16.0,
             icon_stroke: 2.0,
             border: 1.0,
@@ -173,6 +186,15 @@ impl Theme {
     pub fn radius_md(&self) -> f32 { (self.radius - 2.0).max(0.0) }
     pub fn radius_lg(&self) -> f32 { self.radius }
     pub fn radius_xl(&self) -> f32 { self.radius + 4.0 }
+
+    /// `shadow-md`: popovers and tooltips.
+    pub fn shadow_md(&self) -> egui::epaint::Shadow {
+        egui::epaint::Shadow { offset: [0, 4], blur: 6, spread: 0, color: self.palette.shadow }
+    }
+    /// `shadow-lg`: dialogs.
+    pub fn shadow_lg(&self) -> egui::epaint::Shadow {
+        egui::epaint::Shadow { offset: [0, 10], blur: 15, spread: 0, color: self.palette.shadow }
+    }
 }
 
 // ---- Font + apply + accessor ----

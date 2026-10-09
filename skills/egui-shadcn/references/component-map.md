@@ -13,11 +13,14 @@
 | `<Select>` | `components::select::select(ui, "id", &mut idx, &[..])` |
 | `<Separator>` | `components::separator::separator(ui)` |
 | `<Badge variant>` | `components::badge::badge(ui, "..", BadgeVariant::..)` |
+| `<Dialog>` + Header/Title/Description/Footer | `components::dialog::Dialog::new("id", "Title").description(..).show(ctx, &mut open, \|ui\| { ..; dialog::footer(ui, \|ui\| { primary; secondary }) })` — closes on Esc, backdrop, ×; footer runs right to left |
+| `<Popover>` + Trigger/Content | `let t = ui.add(Button::..); components::popover::Popover::new(&t).show(\|ui\| ..)` — click toggles, click outside closes |
+| `<Tooltip>` | `components::tooltip::tooltip(ui.add(..), "text")` |
 | Lucide `<Mic />` | `components::icon::IconView::new(&icons::MIC)` via `ui.add(..)`; `.size(..)`, `.color(..)`; data from `icongen` (see `references/icons.md`) |
 | `<Button><Mic />Mute</Button>` | `Button::new("Mute").icon(&icons::MIC)`; icon-only: `.size(ButtonSize::Icon)`, the text becomes the accessible name |
 
-Not yet ported (add when needed): RadioGroup, Tags/Chips, Menubar, Dialog,
-Popover, Table, Tooltip, DropdownMenu, Accordion, gradients. Build them as new
+Not yet ported (add when needed): RadioGroup, Tags/Chips, Menubar, Table,
+DropdownMenu, Accordion, gradients. Build them as new
 files under `components/` following the custom-paint pattern in `button.rs`
 (floating components like Menubar/Dropdown/Dialog can lean on egui's native
 `menu`/`Area`/`Window` primitives, then theme them with the tokens). After it

@@ -18,6 +18,10 @@
 | 4px spacing grid | `Spacing.item_spacing`, margins |
 | 14px / medium | `text_styles[Body]` + `theme::family(ctx, FAMILY_MEDIUM)` |
 | shadow-sm | `Frame::shadow` (offset [0,1], blur 3), color `Palette.shadow` |
+| shadow-md / shadow-lg | `Theme::shadow_md()` / `shadow_lg()` |
+| dialog overlay `bg-black/50` | `Palette.overlay` |
+| `text-lg` | `Metrics.text_lg` (dialog title) |
+| `max-w-lg` / `w-72` | `Metrics.dialog_width` / `popover_width` |
 | `text-xs` / `text-sm` / `text-base` | `Metrics.text_xs` / `text_sm` / `text_base` |
 | `h-8` / `h-9` / `h-10` | `Metrics.control_sm` / `control_md` / `control_lg` |
 | `px-3` / `px-4` / `px-6` | `Metrics.pad_sm` / `pad_md` / `pad_lg` |
