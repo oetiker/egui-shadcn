@@ -7,6 +7,11 @@ and the project aims to follow [Semantic Versioning](https://semver.org).
 ## [Unreleased]
 
 ### Added
+- Icons without an image loader. The new `icongen` tool (in `tools/icongen/`)
+  turns Lucide or other outline SVG icons into Rust constants, and
+  `IconView` / `Button::icon` draw them in the theme's colors and sizes. A
+  project includes only the icons it lists and gains no runtime dependency.
+  Dots drawn as tiny lines, as in Lucide's `circle-alert`, stay visible.
 - `Button::enabled(false)` greys a button out halfway toward the page
   background and stops it from reacting to clicks or taking focus, like
   shadcn's `disabled` buttons. Screen readers announce it as disabled.

@@ -128,6 +128,8 @@ pub struct Metrics {
     pub field_max_width: f32,
     /// `size-4`: icons and checkbox boxes.
     pub icon: f32,
+    /// Icon stroke width in icon units (Lucide's 24-unit grid draws with 2).
+    pub icon_stroke: f32,
     /// `border`: hairline width.
     pub border: f32,
     /// `ring-[3px]`: focus ring width.
@@ -152,6 +154,7 @@ impl Default for Metrics {
             card_padding: 24.0,
             field_max_width: 280.0,
             icon: 16.0,
+            icon_stroke: 2.0,
             border: 1.0,
             ring: 3.0,
         }

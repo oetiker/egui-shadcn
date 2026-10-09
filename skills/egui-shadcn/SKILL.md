@@ -58,6 +58,8 @@ loop.
      first; layout is where iteration is lost**).
    - `references/component-map.md` — shadcn component/variant → module widget.
    - `references/token-map.md` — shadcn token → egui field.
+   - `references/icons.md` — Lucide (or any outline SVG) icons without an
+     image loader: generate only the icons the project uses.
 6. **Build** from the vendored components. Drop to raw egui only when no helper
    fits — and then prefer adding a helper (see Part B) over inlining.
 

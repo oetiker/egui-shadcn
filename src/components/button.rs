@@ -1,6 +1,7 @@
 //! shadcn Button: variants (default/destructive/outline/secondary/ghost/link)
 //! x sizes (sm/default/lg/icon). Custom-painted for full per-state control.
 
+use crate::components::icon::{paint_icon, Icon};
 use crate::components::shared::{corner, focus_ring, hover_fill, mix_toward};
 use crate::Theme;
 use egui::{Color32, Response, Sense, Stroke, StrokeKind, Ui, Vec2, Widget};
@@ -28,11 +29,12 @@ pub struct Button {
     variant: ButtonVariant,
     size: ButtonSize,
     enabled: bool,
+    icon: Option<&'static Icon>,
 }
 
 impl Button {
     pub fn new(text: impl Into<String>) -> Self {
-        Self { text: text.into(), variant: ButtonVariant::Default, size: ButtonSize::Default, enabled: true }
+        Self { text: text.into(), variant: ButtonVariant::Default, size: ButtonSize::Default, enabled: true, icon: None }
     }
     pub fn variant(mut self, v: ButtonVariant) -> Self {
         self.variant = v;
@@ -46,6 +48,13 @@ impl Button {
     /// halfway toward the page background (shadcn `disabled:opacity-50`).
     pub fn enabled(mut self, yes: bool) -> Self {
         self.enabled = yes;
+        self
+    }
+    /// A leading icon (shadcn `<Button><Icon />Text</Button>`). With
+    /// `ButtonSize::Icon` only the icon is drawn and the text is the button's
+    /// accessible name.
+    pub fn icon(mut self, icon: &'static Icon) -> Self {
+        self.icon = Some(icon);
         self
     }
 }
@@ -96,11 +105,16 @@ impl Widget for Button {
             c.text,
         );
 
-        let width = if self.size == ButtonSize::Icon {
-            height
+        let icon_only = self.size == ButtonSize::Icon && self.icon.is_some();
+        let icon_w = if self.icon.is_some() { m.icon } else { 0.0 };
+        let content_w = if icon_only {
+            icon_w
+        } else if self.icon.is_some() {
+            icon_w + m.gap + galley.size().x
         } else {
-            galley.size().x + pad_x * 2.0
+            galley.size().x
         };
+        let width = if self.size == ButtonSize::Icon { height } else { content_w + pad_x * 2.0 };
         let desired = Vec2::new(width, height);
         let sense = if self.enabled { Sense::click() } else { Sense::hover() };
         let (rect, resp) = ui.allocate_exact_size(desired, sense);
@@ -127,13 +141,19 @@ impl Widget for Button {
             if let Some(b) = c.border {
                 ui.painter().rect_stroke(rect, corner, Stroke::new(m.border, b), StrokeKind::Inside);
             }
-            ui.painter().text(
-                rect.center(),
-                egui::Align2::CENTER_CENTER,
-                &self.text,
-                egui::FontId::new(m.text_sm, fam.clone()),
-                c.text,
-            );
+            let mut x = rect.center().x - content_w / 2.0;
+            if let Some(icon) = self.icon {
+                let icon_rect = egui::Rect::from_min_size(
+                    egui::pos2(x, rect.center().y - icon_w / 2.0),
+                    Vec2::splat(icon_w),
+                );
+                paint_icon(ui.painter(), icon_rect, icon, c.text, m.icon_stroke);
+                x += icon_w + m.gap;
+            }
+            if !icon_only {
+                let pos = egui::pos2(x, rect.center().y - galley.size().y / 2.0);
+                ui.painter().galley(pos, galley, c.text);
+            }
         }
         focus_ring(ui, &resp, &t, t.radius_md());
         resp

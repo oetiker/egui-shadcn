@@ -27,7 +27,9 @@ module. The canonical crate under `src/` is the source of truth;
 ## Build & verify
 
 - `cargo build` / `cargo test` / `cargo clippy --all-targets` — keep
-  warning-clean. On shared machines, cap parallelism (e.g. `cargo test --jobs 4`).
+  warning-clean. `tools/icongen` is its own workspace: test and lint it with
+  `--manifest-path tools/icongen/Cargo.toml`. After changing it, regenerate
+  `tests/icons/lucide.rs` (command in `references/icons.md`). On shared machines, cap parallelism (e.g. `cargo test --jobs 4`).
 - Snapshot tests render headlessly (egui_kittest + wgpu, mesa software adapter —
   no display needed). Regenerate baselines with `UPDATE_SNAPSHOTS=1 cargo test`.
   The visual review loop (look at the PNG, iterate) is described in `SKILL.md`

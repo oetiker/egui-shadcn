@@ -13,6 +13,8 @@
 | `<Select>` | `components::select::select(ui, "id", &mut idx, &[..])` |
 | `<Separator>` | `components::separator::separator(ui)` |
 | `<Badge variant>` | `components::badge::badge(ui, "..", BadgeVariant::..)` |
+| Lucide `<Mic />` | `components::icon::IconView::new(&icons::MIC)` via `ui.add(..)`; `.size(..)`, `.color(..)`; data from `icongen` (see `references/icons.md`) |
+| `<Button><Mic />Mute</Button>` | `Button::new("Mute").icon(&icons::MIC)`; icon-only: `.size(ButtonSize::Icon)`, the text becomes the accessible name |
 
 Not yet ported (add when needed): RadioGroup, Tags/Chips, Menubar, Dialog,
 Popover, Table, Tooltip, DropdownMenu, Accordion, gradients. Build them as new
