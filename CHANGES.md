@@ -4,7 +4,7 @@ All notable changes to the **egui-shadcn** plugin and the `egui_shadcn` crate ar
 recorded here. The format is based on [Keep a Changelog](https://keepachangelog.com),
 and the project aims to follow [Semantic Versioning](https://semver.org).
 
-## [Unreleased]
+## [0.3.0] - 2026-10-09
 
 ### Added
 - Dialog, Popover and Tooltip components in the shadcn style. A dialog closes
@@ -100,6 +100,7 @@ and the project aims to follow [Semantic Versioning](https://semver.org).
 - Reference settings-form-with-tabs screen + snapshot eval; Claude Code plugin
   manifest and marketplace listing.
 
+[0.3.0]: https://github.com/oetiker/egui-shadcn/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/oetiker/egui-shadcn/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/oetiker/egui-shadcn/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/oetiker/egui-shadcn/releases/tag/v0.1.0
